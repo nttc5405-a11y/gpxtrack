@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>沈翔翔的雲端戶外地圖 V16.4</title>
+    <title>雲端戶外地圖 V16.5 (硬核數據解析版)</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     
@@ -71,15 +71,12 @@
             <p id="loading-text" class="text-gray-600 font-bold">正在同步雲端資料...</p>
         </div>
     </div>
-
     <div id="custom-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[10000] flex items-center justify-center hidden p-4">
         <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden transform transition-all duration-200 modal-inactive" id="modal-box">
             <div class="p-6">
                 <h3 id="modal-title" class="text-lg font-bold text-slate-800 mb-2">提示</h3>
                 <p id="modal-message" class="text-slate-600 text-sm mb-4">內容訊息</p>
-                <div id="modal-prompt-area" class="hidden mb-4">
-                    <input type="text" id="modal-input" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm">
-                </div>
+                <div id="modal-prompt-area" class="hidden mb-4"><input type="text" id="modal-input" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm"></div>
                 <div class="flex justify-end gap-3" id="modal-buttons">
                     <button id="modal-cancel" class="px-4 py-2 text-sm font-bold text-slate-500 hover:bg-slate-100 rounded-lg transition">取消</button>
                     <button id="modal-ok" class="px-6 py-2 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-lg shadow-blue-200 transition">確定</button>
@@ -89,12 +86,8 @@
     </div>
 
     <div class="absolute top-4 left-4 z-[1500] flex flex-col gap-2">
-        <button onclick="toggleSidebar()" class="bg-white p-3 rounded-xl shadow-lg md:hidden hover:bg-gray-50 text-slate-700">
-            <i class="ph ph-list text-2xl"></i>
-        </button>
-        <button onclick="fetchFromSheet()" class="bg-white p-3 rounded-xl shadow-lg hover:bg-gray-50 text-blue-600 transition" title="重新整理">
-            <i class="ph ph-arrows-clockwise text-2xl"></i>
-        </button>
+        <button onclick="toggleSidebar()" class="bg-white p-3 rounded-xl shadow-lg md:hidden hover:bg-gray-50 text-slate-700"><i class="ph ph-list text-2xl"></i></button>
+        <button onclick="fetchFromSheet()" class="bg-white p-3 rounded-xl shadow-lg hover:bg-gray-50 text-blue-600 transition" title="重新整理"><i class="ph ph-arrows-clockwise text-2xl"></i></button>
     </div>
 
     <aside id="sidebar" class="sidebar-transition absolute md:relative z-[2000] h-full w-full md:w-[420px] bg-white shadow-2xl flex flex-col transform -translate-x-full md:translate-x-0 shrink-0">
@@ -104,26 +97,16 @@
                     <h1 class="text-xl font-bold flex items-center gap-2">
                         <i class="ph-fill ph-map-trifold text-2xl text-blue-400"></i>
                         雲端戶外地圖
-                        <span class="text-[10px] bg-indigo-500 px-2 py-0.5 rounded-full uppercase tracking-wider">V16.4</span>
+                        <span class="text-[10px] bg-indigo-500 px-2 py-0.5 rounded-full uppercase tracking-wider">V16.5</span>
                     </h1>
-                    <p class="text-xs text-slate-400 mt-1 flex items-center gap-1">
-                        <i class="ph ph-cloud-check"></i> <span id="status-text">準備就緒</span>
-                    </p>
+                    <p class="text-xs text-slate-400 mt-1 flex items-center gap-1"><i class="ph ph-cloud-check"></i> <span id="status-text">準備就緒</span></p>
                 </div>
-                <button onclick="toggleSidebar()" class="md:hidden p-2 hover:bg-slate-700 rounded-full transition">
-                    <i class="ph ph-x text-xl"></i>
-                </button>
+                <button onclick="toggleSidebar()" class="md:hidden p-2 hover:bg-slate-700 rounded-full transition"><i class="ph ph-x text-xl"></i></button>
             </div>
             <div class="flex px-2 gap-1 text-sm font-medium bg-slate-700/30">
-                <button onclick="switchTab('point')" id="tab-btn-point" class="tab-btn active pb-3 pt-1 px-2 flex items-center gap-1 flex-1 justify-center">
-                    <i class="ph ph-map-pin"></i> 地點
-                </button>
-                <button onclick="switchTab('track')" id="tab-btn-track" class="tab-btn pb-3 pt-1 px-2 flex items-center gap-1 flex-1 justify-center">
-                    <i class="ph ph-path"></i> 軌跡
-                </button>
-                <button onclick="switchTab('dash')" id="tab-btn-dash" class="tab-btn pb-3 pt-1 px-2 flex items-center gap-1 flex-1 justify-center">
-                    <i class="ph ph-chart-pie-slice"></i> 統計
-                </button>
+                <button onclick="switchTab('point')" id="tab-btn-point" class="tab-btn active pb-3 pt-1 px-2 flex items-center gap-1 flex-1 justify-center"><i class="ph ph-map-pin"></i> 地點</button>
+                <button onclick="switchTab('track')" id="tab-btn-track" class="tab-btn pb-3 pt-1 px-2 flex items-center gap-1 flex-1 justify-center"><i class="ph ph-path"></i> 軌跡</button>
+                <button onclick="switchTab('dash')" id="tab-btn-dash" class="tab-btn pb-3 pt-1 px-2 flex items-center gap-1 flex-1 justify-center"><i class="ph ph-chart-pie-slice"></i> 統計</button>
             </div>
         </div>
 
@@ -132,45 +115,20 @@
                 <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-4 shadow-sm">
                     <div class="grid grid-cols-2 gap-3">
                         <div class="flex bg-white rounded-lg p-1 border border-slate-200">
-                            <label class="flex-1 text-center cursor-pointer py-1.5 rounded-md transition relative has-[:checked]:bg-green-50">
-                                <input type="radio" name="type" value="mountain" checked class="peer sr-only">
-                                <span class="text-gray-500 peer-checked:text-green-700 peer-checked:font-bold text-sm flex items-center justify-center gap-1"><i class="ph ph-mountains"></i> 登山</span>
-                            </label>
-                            <label class="flex-1 text-center cursor-pointer py-1.5 rounded-md transition relative has-[:checked]:bg-blue-50">
-                                <input type="radio" name="type" value="river" class="peer sr-only">
-                                <span class="text-gray-500 peer-checked:text-blue-700 peer-checked:font-bold text-sm flex items-center justify-center gap-1"><i class="ph ph-waves"></i> 溯溪</span>
-                            </label>
+                            <label class="flex-1 text-center cursor-pointer py-1.5 rounded-md transition relative has-[:checked]:bg-green-50"><input type="radio" name="type" value="mountain" checked class="peer sr-only"><span class="text-gray-500 peer-checked:text-green-700 peer-checked:font-bold text-sm flex items-center justify-center gap-1"><i class="ph ph-mountains"></i> 登山</span></label>
+                            <label class="flex-1 text-center cursor-pointer py-1.5 rounded-md transition relative has-[:checked]:bg-blue-50"><input type="radio" name="type" value="river" class="peer sr-only"><span class="text-gray-500 peer-checked:text-blue-700 peer-checked:font-bold text-sm flex items-center justify-center gap-1"><i class="ph ph-waves"></i> 溯溪</span></label>
                         </div>
                         <div class="flex bg-white rounded-lg p-1 border border-slate-200">
-                            <label class="flex-1 text-center cursor-pointer py-1.5 rounded-md transition has-[:checked]:bg-indigo-50">
-                                <input type="radio" name="status" value="climbed" checked class="peer sr-only">
-                                <span class="text-gray-500 peer-checked:text-indigo-700 peer-checked:font-bold text-sm">已完成</span>
-                            </label>
-                            <label class="flex-1 text-center cursor-pointer py-1.5 rounded-md transition has-[:checked]:bg-red-50">
-                                <input type="radio" name="status" value="unclimbed" class="peer sr-only">
-                                <span class="text-gray-500 peer-checked:text-red-600 peer-checked:font-bold text-sm">待前往</span>
-                            </label>
+                            <label class="flex-1 text-center cursor-pointer py-1.5 rounded-md transition has-[:checked]:bg-indigo-50"><input type="radio" name="status" value="climbed" checked class="peer sr-only"><span class="text-gray-500 peer-checked:text-indigo-700 peer-checked:font-bold text-sm">已完成</span></label>
+                            <label class="flex-1 text-center cursor-pointer py-1.5 rounded-md transition has-[:checked]:bg-red-50"><input type="radio" name="status" value="unclimbed" class="peer sr-only"><span class="text-gray-500 peer-checked:text-red-600 peer-checked:font-bold text-sm">待前往</span></label>
                         </div>
                     </div>
-                    <div class="grid grid-cols-3 gap-2">
-                        <input type="text" id="input-name" placeholder="名稱" class="col-span-2 w-full px-4 py-2 text-sm border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500">
-                        <input type="date" id="input-date" class="w-full px-2 py-2 text-sm border border-slate-300 rounded-lg outline-none">
-                    </div>
-                    <div class="flex gap-2">
-                        <input type="text" id="input-lat" placeholder="緯度" oninput="handleLatInput(this)" class="flex-1 px-4 py-2 text-sm border border-slate-300 rounded-lg">
-                        <input type="text" id="input-lng" placeholder="經度" oninput="handleManualCoord()" class="flex-1 px-4 py-2 text-sm border border-slate-300 rounded-lg">
-                    </div>
-                    <button onclick="addRecord()" class="w-full bg-slate-800 hover:bg-slate-700 text-white py-2.5 rounded-lg shadow-lg transition flex items-center justify-center gap-2 font-bold">
-                        <i class="ph ph-cloud-arrow-up text-lg"></i> 新增紀錄並同步
-                    </button>
+                    <div class="grid grid-cols-3 gap-2"><input type="text" id="input-name" placeholder="名稱" class="col-span-2 w-full px-4 py-2 text-sm border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"><input type="date" id="input-date" class="w-full px-2 py-2 text-sm border border-slate-300 rounded-lg outline-none"></div>
+                    <div class="flex gap-2"><input type="text" id="input-lat" placeholder="緯度" oninput="handleLatInput(this)" class="flex-1 px-4 py-2 text-sm border border-slate-300 rounded-lg"><input type="text" id="input-lng" placeholder="經度" oninput="handleManualCoord()" class="flex-1 px-4 py-2 text-sm border border-slate-300 rounded-lg"></div>
+                    <button onclick="addRecord()" class="w-full bg-slate-800 hover:bg-slate-700 text-white py-2.5 rounded-lg shadow-lg transition flex items-center justify-center gap-2 font-bold"><i class="ph ph-cloud-arrow-up text-lg"></i> 新增紀錄並同步</button>
                 </div>
                 <div class="pt-2">
-                    <div class="flex items-center justify-between mb-3">
-                        <label class="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-1"><i class="ph ph-funnel"></i> 紀錄清單</label>
-                        <select id="year-filter" onchange="renderPoints()" class="text-sm border border-slate-300 rounded-lg px-3 py-1 bg-white outline-none">
-                            <option value="all">顯示全部年份</option>
-                        </select>
-                    </div>
+                    <div class="flex items-center justify-between mb-3"><label class="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-1"><i class="ph ph-funnel"></i> 紀錄清單</label><select id="year-filter" onchange="renderPoints()" class="text-sm border border-slate-300 rounded-lg px-3 py-1 bg-white outline-none"><option value="all">顯示全部年份</option></select></div>
                     <div id="record-list" class="space-y-3 pb-10"></div>
                 </div>
             </div>
@@ -180,9 +138,7 @@
             <div class="p-8 flex-1 overflow-y-auto custom-scrollbar">
                 <label for="gpx-file" class="flex flex-col items-center justify-center w-full h-56 border-3 border-blue-200 border-dashed rounded-3xl cursor-pointer bg-blue-50 hover:bg-blue-100 transition-all group relative">
                     <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center">
-                        <div class="bg-blue-500 text-white p-4 rounded-full shadow-lg mb-4 group-hover:scale-110 transition-transform">
-                            <i class="ph ph-files text-3xl"></i>
-                        </div>
+                        <div class="bg-blue-500 text-white p-4 rounded-full shadow-lg mb-4 group-hover:scale-110 transition-transform"><i class="ph ph-files text-3xl"></i></div>
                         <p class="mb-2 text-base text-blue-800 font-bold">點擊或拖曳多個 GPX 檔案</p>
                         <p class="text-xs text-blue-500 px-6 mt-2 bg-blue-100 py-1 rounded-full font-bold">支援批量多選上傳</p>
                     </div>
@@ -193,9 +149,6 @@
 
         <div id="tab-dash" class="tab-content">
             <div class="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-6 bg-slate-50/50">
-                <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                    <i class="ph ph-presentation-chart"></i> 數據儀表板
-                </h2>
                 
                 <div class="grid grid-cols-1 gap-4">
                     <div class="stat-card bg-gradient-to-r from-slate-800 to-slate-700 text-white shadow-md relative overflow-hidden">
@@ -203,66 +156,99 @@
                         <p class="text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-2">近期活躍狀態</p>
                         <div id="stat-recent" class="text-sm font-bold relative z-10">計算中...</div>
                     </div>
-                    
                     <div class="stat-card shadow-sm border border-blue-100">
                         <div class="flex justify-between items-end mb-2">
                             <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1"><i class="ph-fill ph-target"></i> 總體探索進度</p>
                             <span id="stat-progress-text" class="text-sm font-black text-blue-600">0%</span>
                         </div>
-                        <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
-                            <div id="stat-progress-bar" class="bg-blue-500 h-2.5 rounded-full transition-all duration-1000 ease-out" style="width: 0%"></div>
-                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden"><div id="stat-progress-bar" class="bg-blue-500 h-2.5 rounded-full transition-all duration-1000 ease-out" style="width: 0%"></div></div>
                         <p class="text-[10px] text-slate-400 mt-2 text-right">已完成 / 總點位</p>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="stat-card bg-gradient-to-br from-white to-green-50">
-                        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">登山紀錄</p>
-                        <div class="flex items-baseline gap-1 mt-1">
-                            <span id="stat-mt-count" class="text-2xl font-black text-green-600">0</span>
-                            <span class="text-xs text-slate-400">座</span>
+                <div class="bg-slate-200/70 p-1.5 rounded-xl flex shrink-0 shadow-inner">
+                    <button onclick="switchDashSubTab('overview')" id="dash-btn-overview" class="flex-1 py-1.5 text-xs font-bold bg-white text-slate-800 rounded-lg shadow transition">📊 數據概覽</button>
+                    <button onclick="switchDashSubTab('hardcore')" id="dash-btn-hardcore" class="flex-1 py-1.5 text-xs font-bold text-slate-500 hover:text-slate-700 transition">⛰️ 硬核解析</button>
+                </div>
+
+                <div id="dash-view-overview" class="space-y-6 block">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="stat-card bg-gradient-to-br from-white to-green-50">
+                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">登山紀錄</p>
+                            <div class="flex items-baseline gap-1 mt-1"><span id="stat-mt-count" class="text-2xl font-black text-green-600">0</span><span class="text-xs text-slate-400">座</span></div>
+                        </div>
+                        <div class="stat-card bg-gradient-to-br from-white to-blue-50">
+                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">溯溪紀錄</p>
+                            <div class="flex items-baseline gap-1 mt-1"><span id="stat-rv-count" class="text-2xl font-black text-blue-600">0</span><span class="text-xs text-slate-400">條</span></div>
+                        </div>
+                        <div class="stat-card bg-gradient-to-br from-white to-indigo-50">
+                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">累積軌跡</p>
+                            <div class="flex items-baseline gap-1 mt-1"><span id="stat-tk-count" class="text-2xl font-black text-indigo-600">0</span><span class="text-xs text-slate-400">條</span></div>
+                        </div>
+                        <div class="stat-card bg-gradient-to-br from-white to-orange-50">
+                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">待前往</p>
+                            <div class="flex items-baseline gap-1 mt-1"><span id="stat-un-count" class="text-2xl font-black text-orange-600">0</span><span class="text-xs text-slate-400">處</span></div>
                         </div>
                     </div>
-                    <div class="stat-card bg-gradient-to-br from-white to-blue-50">
-                        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">溯溪紀錄</p>
-                        <div class="flex items-baseline gap-1 mt-1">
-                            <span id="stat-rv-count" class="text-2xl font-black text-blue-600">0</span>
-                            <span class="text-xs text-slate-400">條</span>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="stat-card flex flex-col"><p class="text-sm font-bold text-slate-700 mb-2">活動比例</p><div class="relative h-40 w-full flex justify-center"><canvas id="typeChart"></canvas></div></div>
+                        <div class="stat-card flex flex-col"><p class="text-sm font-bold text-slate-700 mb-2">年度趨勢</p><div class="relative h-40 w-full"><canvas id="yearTrendChart"></canvas></div></div>
+                    </div>
+                    <div class="stat-card flex flex-col mb-10">
+                        <p class="text-sm font-bold text-slate-700 mb-2 flex items-center gap-1"><i class="ph-fill ph-thermometer"></i> 月度活躍熱區</p>
+                        <p class="text-xs text-slate-400 mb-4">分析歷年來各月份的出行頻率</p>
+                        <div class="relative h-64 w-full flex justify-center"><canvas id="monthChart"></canvas></div>
+                    </div>
+                </div>
+
+                <div id="dash-view-hardcore" class="space-y-4 hidden pb-10">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="stat-card bg-gradient-to-br from-slate-700 to-slate-900 text-white relative overflow-hidden">
+                            <i class="ph-fill ph-person-simple-walk absolute -right-2 -bottom-2 text-5xl opacity-10"></i>
+                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">總徒步里程</p>
+                            <div class="flex items-baseline gap-1 mt-1">
+                                <span id="stat-total-dist" class="text-3xl font-black text-amber-400">0</span>
+                                <span class="text-xs text-slate-400">km</span>
+                            </div>
+                        </div>
+                        <div class="stat-card bg-gradient-to-br from-slate-700 to-slate-900 text-white relative overflow-hidden">
+                            <i class="ph-fill ph-trend-up absolute -right-2 -bottom-2 text-5xl opacity-10"></i>
+                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">總爬升高度</p>
+                            <div class="flex items-baseline gap-1 mt-1">
+                                <span id="stat-total-ele" class="text-3xl font-black text-emerald-400">0</span>
+                                <span class="text-xs text-slate-400">m</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="stat-card bg-gradient-to-br from-white to-indigo-50">
-                        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">累積軌跡</p>
-                        <div class="flex items-baseline gap-1 mt-1">
-                            <span id="stat-tk-count" class="text-2xl font-black text-indigo-600">0</span>
-                            <span class="text-xs text-slate-400">條</span>
-                        </div>
-                    </div>
-                    <div class="stat-card bg-gradient-to-br from-white to-orange-50">
-                        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">待前往</p>
-                        <div class="flex items-baseline gap-1 mt-1">
-                            <span id="stat-un-count" class="text-2xl font-black text-orange-600">0</span>
-                            <span class="text-xs text-slate-400">處</span>
+
+                    <div class="stat-card">
+                        <p class="text-sm font-bold text-slate-700 mb-4 flex items-center gap-2"><i class="ph-fill ph-trophy text-amber-500 text-xl"></i> 個人最佳紀錄 (PR)</p>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center bg-slate-50 p-3 rounded-lg border border-slate-100">
+                                <span class="text-xs text-slate-500 font-bold flex items-center gap-2"><i class="ph-fill ph-arrows-out-line-horizontal text-blue-500"></i> 單次最長里程</span>
+                                <div class="text-right">
+                                    <div class="font-black text-slate-700"><span id="pr-dist-val">0</span> km</div>
+                                    <div class="text-[10px] text-slate-400 truncate w-32" id="pr-dist-name">-</div>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center bg-slate-50 p-3 rounded-lg border border-slate-100">
+                                <span class="text-xs text-slate-500 font-bold flex items-center gap-2"><i class="ph-fill ph-mountains text-emerald-500"></i> 單次最大爬升</span>
+                                <div class="text-right">
+                                    <div class="font-black text-slate-700"><span id="pr-ele-val">0</span> m</div>
+                                    <div class="text-[10px] text-slate-400 truncate w-32" id="pr-ele-name">-</div>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center bg-slate-50 p-3 rounded-lg border border-slate-100">
+                                <span class="text-xs text-slate-500 font-bold flex items-center gap-2"><i class="ph-fill ph-flag-pennant text-red-500"></i> 最高海拔到達</span>
+                                <div class="text-right">
+                                    <div class="font-black text-slate-700"><span id="pr-maxele-val">0</span> m</div>
+                                    <div class="text-[10px] text-slate-400 truncate w-32" id="pr-maxele-name">-</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="stat-card flex flex-col">
-                        <p class="text-sm font-bold text-slate-700 mb-2">活動比例</p>
-                        <div class="relative h-40 w-full flex justify-center"><canvas id="typeChart"></canvas></div>
-                    </div>
-                    <div class="stat-card flex flex-col">
-                        <p class="text-sm font-bold text-slate-700 mb-2">年度趨勢</p>
-                        <div class="relative h-40 w-full"><canvas id="yearTrendChart"></canvas></div>
-                    </div>
-                </div>
-
-                <div class="stat-card flex flex-col mb-10">
-                    <p class="text-sm font-bold text-slate-700 mb-2 flex items-center gap-1"><i class="ph-fill ph-thermometer"></i> 月度活躍熱區</p>
-                    <p class="text-xs text-slate-400 mb-4">分析歷年來各月份的出行頻率</p>
-                    <div class="relative h-64 w-full flex justify-center"><canvas id="monthChart"></canvas></div>
-                </div>
             </div>
         </div>
     </aside>
@@ -274,99 +260,52 @@
 
     <script>
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwzJjXB2LT1nU6hLFTpbRvZQc-bwL_hbPtPEKSholS9qaO6wk-stNT4BscPmnE5xWTNPA/exec";
-
         let _sessionPassword = null;
 
+        // 共用與初始化函式
         async function requireWriteAuth() {
             if (_sessionPassword !== null) return true;
             const entered = await uiModal.prompt("🔒 寫入驗證", "請輸入密碼才能新增、匯入或刪除資料：");
             if (entered === null) return false;
-            if (entered.trim() === "") {
-                await uiModal.alert("驗證失敗", "密碼不能為空。");
-                return false;
-            }
-            _sessionPassword = entered.trim();
-            return true;
+            if (entered.trim() === "") { await uiModal.alert("驗證失敗", "密碼不能為空。"); return false; }
+            _sessionPassword = entered.trim(); return true;
         }
 
         const map = L.map('map', { zoomControl: false }).setView([23.6, 120.96], 7);
         L.control.zoom({ position: 'topright' }).addTo(map);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap', maxZoom: 18 }).addTo(map);
-
-        const locateControl = L.Control.extend({
+        map.addControl(new (L.Control.extend({
             options: { position: 'topright' },
             onAdd: function() {
-                const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
-                const btn = L.DomUtil.create('a', 'map-control-btn', container);
+                const btn = L.DomUtil.create('a', 'map-control-btn leaflet-bar leaflet-control');
                 btn.innerHTML = '<i class="ph-fill ph-navigation-arrow text-blue-600 text-lg"></i>';
-                btn.onclick = () => map.locate({setView: true, maxZoom: 15});
-                return container;
+                btn.onclick = () => map.locate({setView: true, maxZoom: 15}); return btn;
             }
-        });
-        map.addControl(new locateControl());
-
-        map.on('locationfound', (e) => {
-            L.circle(e.latlng, e.accuracy / 2).addTo(map);
-            L.marker(e.latlng).addTo(map).bindPopup("目前位置").openPopup();
-        });
+        }))());
+        map.on('locationfound', (e) => { L.circle(e.latlng, e.accuracy / 2).addTo(map); L.marker(e.latlng).addTo(map).bindPopup("目前位置").openPopup(); });
 
         const uiModal = {
             target: document.getElementById('custom-modal'), box: document.getElementById('modal-box'),
             title: document.getElementById('modal-title'), msg: document.getElementById('modal-message'),
             inputArea: document.getElementById('modal-prompt-area'), input: document.getElementById('modal-input'),
             btnCancel: document.getElementById('modal-cancel'), btnOk: document.getElementById('modal-ok'),
-            alert(title, msg) {
-                return new Promise(res => {
-                    this.show(title, msg, false, false);
-                    this.btnOk.onclick = () => { this.hide(); res(true); };
-                });
-            },
-            confirm(title, msg) {
-                return new Promise(res => {
-                    this.show(title, msg, true, false);
-                    this.btnOk.onclick = () => { this.hide(); res(true); };
-                    this.btnCancel.onclick = () => { this.hide(); res(false); };
-                });
-            },
-            prompt(title, msg, defaultVal = '') {
-                return new Promise(res => {
-                    this.show(title, msg, true, true);
-                    this.input.value = defaultVal;
-                    this.btnOk.onclick = () => { this.hide(); res(this.input.value); };
-                    this.btnCancel.onclick = () => { this.hide(); res(null); };
-                });
-            },
+            alert(title, msg) { return new Promise(res => { this.show(title, msg, false, false); this.btnOk.onclick = () => { this.hide(); res(true); }; }); },
+            confirm(title, msg) { return new Promise(res => { this.show(title, msg, true, false); this.btnOk.onclick = () => { this.hide(); res(true); }; this.btnCancel.onclick = () => { this.hide(); res(false); }; }); },
+            prompt(title, msg, defaultVal = '') { return new Promise(res => { this.show(title, msg, true, true); this.input.value = defaultVal; this.btnOk.onclick = () => { this.hide(); res(this.input.value); }; this.btnCancel.onclick = () => { this.hide(); res(null); }; }); },
             show(title, msg, showCancel, showInput) {
                 this.title.innerText = title; this.msg.innerText = msg;
                 this.btnCancel.classList.toggle('hidden', !showCancel); this.inputArea.classList.toggle('hidden', !showInput);
-                this.target.classList.remove('hidden');
-                setTimeout(() => { this.box.classList.remove('modal-inactive'); this.box.classList.add('modal-active'); if(showInput) this.input.focus(); }, 10);
+                this.target.classList.remove('hidden'); setTimeout(() => { this.box.classList.remove('modal-inactive'); this.box.classList.add('modal-active'); if(showInput) this.input.focus(); }, 10);
             },
-            hide() {
-                this.box.classList.remove('modal-active'); this.box.classList.add('modal-inactive');
-                setTimeout(() => this.target.classList.add('hidden'), 200);
-            }
+            hide() { this.box.classList.remove('modal-active'); this.box.classList.add('modal-inactive'); setTimeout(() => this.target.classList.add('hidden'), 200); }
         };
 
-        let myRecords = [];
-        let mapLayers = {}; 
-        let tempMarker = null;
-        let charts = { type: null, trend: null, month: null }; // 新增 month 圖表容器
+        let myRecords = [], mapLayers = {}, tempMarker = null, charts = { type: null, trend: null, month: null };
+        const loadingOverlay = document.getElementById('loading-overlay'), loadingText = document.getElementById('loading-text');
+        const inputLat = document.getElementById('input-lat'), inputLng = document.getElementById('input-lng');
+        const sidebar = document.getElementById('sidebar'), yearFilter = document.getElementById('year-filter'), statusText = document.getElementById('status-text');
 
-        const loadingOverlay = document.getElementById('loading-overlay');
-        const loadingText = document.getElementById('loading-text');
-        const inputLat = document.getElementById('input-lat');
-        const inputLng = document.getElementById('input-lng');
-        const sidebar = document.getElementById('sidebar');
-        const yearFilter = document.getElementById('year-filter');
-        const statusText = document.getElementById('status-text');
-
-        function toggleSidebar() {
-            sidebar.classList.contains('translate-x-0') 
-                ? sidebar.classList.replace('translate-x-0', '-translate-x-full')
-                : sidebar.classList.replace('-translate-x-full', 'translate-x-0');
-        }
-
+        function toggleSidebar() { sidebar.classList.contains('translate-x-0') ? sidebar.classList.replace('translate-x-0', '-translate-x-full') : sidebar.classList.replace('-translate-x-full', 'translate-x-0'); }
         function switchTab(type) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById(`tab-btn-${type}`).classList.add('active');
@@ -375,508 +314,273 @@
             if (type === 'dash') renderDashboard();
         }
 
-        map.on('click', (e) => {
-            if(!document.getElementById('tab-point').classList.contains('active')) return;
-            updateInputAndMarker(e.latlng.lat.toFixed(5), e.latlng.lng.toFixed(5));
-        });
+        // 儀表板內部子標籤切換
+        function switchDashSubTab(view) {
+            const btnClassOn = "flex-1 py-1.5 text-xs font-bold bg-white text-slate-800 rounded-lg shadow transition";
+            const btnClassOff = "flex-1 py-1.5 text-xs font-bold text-slate-500 hover:text-slate-700 transition";
+            document.getElementById('dash-btn-overview').className = view === 'overview' ? btnClassOn : btnClassOff;
+            document.getElementById('dash-btn-hardcore').className = view === 'hardcore' ? btnClassOn : btnClassOff;
+            document.getElementById('dash-view-overview').classList.toggle('hidden', view !== 'overview');
+            document.getElementById('dash-view-hardcore').classList.toggle('hidden', view !== 'hardcore');
+        }
 
+        map.on('click', (e) => { if(document.getElementById('tab-point').classList.contains('active')) updateInputAndMarker(e.latlng.lat.toFixed(5), e.latlng.lng.toFixed(5)); });
         function handleLatInput(input) {
             let val = input.value.trim();
             if (val.includes(',') || val.includes('，')) {
                 let parts = val.replace('，', ',').split(',');
                 if (parts.length >= 2) {
                     let lat = parseFloat(parts[0].trim()), lng = parseFloat(parts[1].trim());
-                    if (!isNaN(lat) && !isNaN(lng)) {
-                        inputLat.value = lat; inputLng.value = lng;
-                        updateTempMarker(lat, lng); map.flyTo([lat, lng], 14);
-                    }
+                    if (!isNaN(lat) && !isNaN(lng)) { inputLat.value = lat; inputLng.value = lng; updateTempMarker(lat, lng); map.flyTo([lat, lng], 14); }
                 }
             } else { handleManualCoord(); }
         }
-
-        function handleManualCoord() {
-            let lat = parseFloat(inputLat.value), lng = parseFloat(inputLng.value);
-            if (!isNaN(lat) && !isNaN(lng)) updateTempMarker(lat, lng);
-        }
-
-        function updateTempMarker(lat, lng) {
-            if (tempMarker) map.removeLayer(tempMarker);
-            tempMarker = L.marker([lat, lng]).addTo(map).bindPopup("點選位置").openPopup();
-        }
-
-        function updateInputAndMarker(lat, lng) {
-            inputLat.value = lat; inputLng.value = lng; updateTempMarker(lat, lng);
-        }
-
-        function getYearColor(dateStr) {
-            if (!dateStr) return '#3b82f6';
-            const year = parseInt(String(dateStr).split('-')[0]);
-            if (isNaN(year)) return '#3b82f6';
-            return `hsl(${(year * 137.5) % 360}, 75%, 45%)`;
-        }
-
+        function handleManualCoord() { let lat = parseFloat(inputLat.value), lng = parseFloat(inputLng.value); if (!isNaN(lat) && !isNaN(lng)) updateTempMarker(lat, lng); }
+        function updateTempMarker(lat, lng) { if (tempMarker) map.removeLayer(tempMarker); tempMarker = L.marker([lat, lng]).addTo(map).bindPopup("點選位置").openPopup(); }
+        function updateInputAndMarker(lat, lng) { inputLat.value = lat; inputLng.value = lng; updateTempMarker(lat, lng); }
+        function getYearColor(dateStr) { if (!dateStr) return '#3b82f6'; const year = parseInt(String(dateStr).split('-')[0]); return isNaN(year) ? '#3b82f6' : `hsl(${(year * 137.5) % 360}, 75%, 45%)`; }
         function updateYearOptions() {
-            const years = new Set();
+            const years = new Set(), current = yearFilter.value;
             myRecords.forEach(r => { if(r.date) { const y = String(r.date).split('-')[0]; if(!isNaN(y)) years.add(y); } });
-            const current = yearFilter.value;
             yearFilter.innerHTML = '<option value="all">顯示全部年份</option>';
-            Array.from(years).sort((a,b) => b-a).forEach(y => {
-                const opt = document.createElement('option'); opt.value = y; opt.innerText = `${y} 年`; yearFilter.appendChild(opt);
-            });
+            Array.from(years).sort((a,b) => b-a).forEach(y => { const opt = document.createElement('option'); opt.value = y; opt.innerText = `${y} 年`; yearFilter.appendChild(opt); });
             yearFilter.value = years.has(current) ? current : 'all';
         }
 
-        function extractDateFromGPX(gpxString) {
+        // ==========================================
+        // 🚀 GPX 硬核數據解析引擎
+        // ==========================================
+        function calculateGPXStats(gpxString) {
+            let stats = { distance: 0, elevationGain: 0, maxElevation: 0, valid: false };
             try {
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(gpxString, "text/xml");
-                const timeNodes = xmlDoc.getElementsByTagName("time");
-                if (timeNodes && timeNodes.length > 0) {
-                    for (let i = 0; i < timeNodes.length; i++) {
-                        const timeText = timeNodes[i].textContent;
-                        if (timeText) {
-                            const dateMatch = timeText.match(/^(\d{4}-\d{2}-\d{2})/);
-                            if (dateMatch) return dateMatch[1];
-                        }
-                    }
-                }
-            } catch (e) {}
-            return new Date().toISOString().split('T')[0];
-        }
-
-        function cleanGPX(gpxString) {
-            if (!gpxString) return "";
-            let clean = gpxString.replace(/^\uFEFF/, '').trim();
-            clean = clean.replace(/&(?!amp;|lt;|gt;|quot;|apos;|#\d+;)/g, '&amp;');
-            clean = clean.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '');
-            if (!clean.startsWith('<?xml') && !clean.startsWith('<gpx')) {
-                if (clean.includes('<trk>')) {
-                    clean = `<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.1" creator="CloudMap" xmlns="http://www.topografix.com/GPX/1/1">\n${clean}\n</gpx>`;
-                } else {
-                    return `<?xml version="1.0" encoding="UTF-8"?><gpx version="1.1" creator="CloudMap" xmlns="http://www.topografix.com/GPX/1/1"></gpx>`;
-                }
-            }
-            return clean;
-        }
-
-        function compressGPX(gpxString) {
-            if (!gpxString) return "";
-            try {
-                const cleanString = cleanGPX(gpxString);
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(cleanString, "text/xml");
-                if (xmlDoc.getElementsByTagName("parsererror").length > 0) return cleanString;
+                const xmlDoc = new DOMParser().parseFromString(gpxString, "text/xml");
+                if (xmlDoc.getElementsByTagName("parsererror").length > 0) return stats;
                 
                 const trkpts = xmlDoc.getElementsByTagName("trkpt");
-                const total = trkpts.length;
-                
-                if (total > 3000) {
-                    const step = Math.ceil(total / 2000);
-                    const trksegs = xmlDoc.getElementsByTagName("trkseg");
-                    
-                    for (let s = 0; s < trksegs.length; s++) {
-                        const seg = trksegs[s];
-                        const pts = seg.getElementsByTagName("trkpt");
-                        const nodesToRemove = [];
-                        for (let i = 0; i < pts.length; i++) if (i % step !== 0) nodesToRemove.push(pts[i]);
-                        nodesToRemove.forEach(node => { if(node && node.parentNode) node.parentNode.removeChild(node); });
+                if (trkpts.length < 2) return stats;
+                stats.valid = true;
+
+                let prevLat = null, prevLng = null, prevEle = null;
+                const R = 6371; // 地球半徑 (km)
+
+                for (let i = 0; i < trkpts.length; i++) {
+                    const pt = trkpts[i];
+                    const lat = parseFloat(pt.getAttribute("lat"));
+                    const lng = parseFloat(pt.getAttribute("lon"));
+                    const eleNodes = pt.getElementsByTagName("ele");
+                    const ele = eleNodes.length > 0 ? parseFloat(eleNodes[0].textContent) : null;
+
+                    // 1. 計算距離 (Haversine Formula)
+                    if (!isNaN(lat) && !isNaN(lng)) {
+                        if (prevLat !== null && prevLng !== null) {
+                            const dLat = (lat - prevLat) * Math.PI / 180;
+                            const dLng = (lng - prevLng) * Math.PI / 180;
+                            const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(prevLat * Math.PI / 180) * Math.cos(lat * Math.PI / 180) * Math.sin(dLng/2) * Math.sin(dLng/2);
+                            stats.distance += R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
+                        }
+                        prevLat = lat; prevLng = lng;
+                    }
+
+                    // 2. 計算爬升與最高海拔
+                    if (ele !== null && !isNaN(ele)) {
+                        if (ele > stats.maxElevation) stats.maxElevation = ele;
+                        if (prevEle !== null && ele > prevEle) stats.elevationGain += (ele - prevEle);
+                        prevEle = ele;
                     }
                 }
-                const serializer = new XMLSerializer();
-                return serializer.serializeToString(xmlDoc);
-            } catch (e) { return cleanGPX(gpxString); }
+            } catch (e) { console.warn("GPX 數據解析失敗", e); }
+            return stats;
+        }
+
+        // 原有 GPX 處理函式 (壓縮與清理)
+        function extractDateFromGPX(g) {
+            try { const t = new DOMParser().parseFromString(g, "text/xml").getElementsByTagName("time");
+                if (t && t.length > 0) { for(let i=0; i<t.length; i++){ const m = t[i].textContent.match(/^(\d{4}-\d{2}-\d{2})/); if (m) return m[1]; } }
+            } catch (e) {} return new Date().toISOString().split('T')[0];
+        }
+        function cleanGPX(g) {
+            if (!g) return ""; let c = g.replace(/^\uFEFF/, '').trim().replace(/&(?!amp;|lt;|gt;|quot;|apos;|#\d+;)/g, '&amp;').replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '');
+            if (!c.startsWith('<?xml') && !c.startsWith('<gpx')) { return c.includes('<trk>') ? `<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.1" creator="CloudMap" xmlns="http://www.topografix.com/GPX/1/1">\n${c}\n</gpx>` : `<?xml version="1.0" encoding="UTF-8"?><gpx version="1.1" creator="CloudMap" xmlns="http://www.topografix.com/GPX/1/1"></gpx>`; }
+            return c;
+        }
+        function compressGPX(g) {
+            if (!g) return "";
+            try {
+                const c = cleanGPX(g), doc = new DOMParser().parseFromString(c, "text/xml");
+                if (doc.getElementsByTagName("parsererror").length > 0) return c;
+                const total = doc.getElementsByTagName("trkpt").length;
+                if (total > 3000) {
+                    const step = Math.ceil(total / 2000), segs = doc.getElementsByTagName("trkseg");
+                    for (let s = 0; s < segs.length; s++) {
+                        const pts = segs[s].getElementsByTagName("trkpt"), rem = [];
+                        for (let i = 0; i < pts.length; i++) if (i % step !== 0) rem.push(pts[i]);
+                        rem.forEach(n => { if(n && n.parentNode) n.parentNode.removeChild(n); });
+                    }
+                }
+                return new XMLSerializer().serializeToString(doc);
+            } catch (e) { return cleanGPX(g); }
         }
 
         async function handleGPXUpload(input) {
             if (!await requireWriteAuth()) { input.value = ''; return; }
-            const files = input.files;
-            if (!files || files.length === 0) return;
-            
+            const files = input.files; if (!files || files.length === 0) return;
             showLoading(`準備處理 ${files.length} 個檔案...`);
-            let successCount = 0, failCount = 0, needsSync = false;
+            let success = 0, fail = 0, needsSync = false;
 
-            const processFile = (file) => {
-                return new Promise((resolve) => {
-                    const reader = new FileReader();
-                    reader.readAsText(file, "UTF-8");
-                    reader.onload = () => {
-                        try {
-                            let gpxContent = reader.result;
-                            if (!gpxContent || gpxContent.trim().length < 50) throw new Error("無效的 GPX 檔案");
-                            
-                            let trackDate = extractDateFromGPX(gpxContent);
-                            gpxContent = cleanGPX(gpxContent);
-                            if (gpxContent.length > 500000) gpxContent = compressGPX(gpxContent);
-                            let compressedBase64 = LZString.compressToBase64(gpxContent);
-                            const defaultName = file.name.replace(/\.[^/.]+$/, "");
+            const processFile = (file) => new Promise((resolve) => {
+                const r = new FileReader(); r.readAsText(file, "UTF-8");
+                r.onload = () => {
+                    try {
+                        let g = r.result; if (!g || g.trim().length < 50) throw new Error("無效");
+                        let d = extractDateFromGPX(g); g = cleanGPX(g); if (g.length > 500000) g = compressGPX(g);
+                        myRecords.push({ id: 'r' + Date.now() + Math.floor(Math.random() * 1000), name: file.name.replace(/\.[^/.]+$/, ""), date: d, lat: 0, lng: 0, status: 'climbed', type: 'track', gpx: LZString.compressToBase64(g) });
+                        success++; needsSync = true; resolve();
+                    } catch (e) { fail++; resolve(); }
+                }; r.onerror = () => { fail++; resolve(); };
+            });
 
-                            myRecords.push({
-                                id: 'r' + Date.now() + Math.floor(Math.random() * 1000),
-                                name: defaultName, date: trackDate, lat: 0, lng: 0, status: 'climbed', type: 'track', gpx: compressedBase64 
-                            });
-                            successCount++; needsSync = true; resolve();
-                        } catch (err) { failCount++; resolve(); }
-                    };
-                    reader.onerror = () => { failCount++; resolve(); };
-                });
-            };
-
-            for (let i = 0; i < files.length; i++) {
-                showLoading(`處理檔案 (${i + 1}/${files.length})...`);
-                await processFile(files[i]);
-            }
-
+            for (let i = 0; i < files.length; i++) { showLoading(`處理檔案 (${i + 1}/${files.length})...`); await processFile(files[i]); }
             input.value = '';
-            if (needsSync) {
-                showLoading("檔案處理完畢，正在同步至雲端...");
-                updateYearOptions(); renderPoints(); switchTab('point'); 
-                syncToSheetWithMessage(`批量上傳完成！\n成功: ${successCount} 筆\n失敗: ${failCount} 筆`);
-            } else {
-                hideLoading(); uiModal.alert("上傳結果", `未成功載入任何檔案。\n失敗: ${failCount} 筆`);
-            }
+            if (needsSync) { showLoading("同步至雲端..."); updateYearOptions(); renderPoints(); switchTab('point'); syncToSheetWithMessage(`上傳完成！\n成功: ${success}\n失敗: ${fail}`); } 
+            else { hideLoading(); uiModal.alert("上傳結果", `載入失敗。\n失敗: ${fail}`); }
         }
 
         function fetchFromSheet() {
             showLoading("同步中...");
             fetch(GOOGLE_SCRIPT_URL).then(r => r.json()).then(data => {
-                if (!Array.isArray(data)) throw new Error(data.error || "後端回傳格式錯誤");
+                if (!Array.isArray(data)) throw new Error(data.error || "格式錯誤");
                 myRecords = data.map(r => {
-                    let combined = r.gpx || "";
-                    let i = 1;
-                    while (r[`gpx_seg_${i}`] !== undefined) { combined += r[`gpx_seg_${i}`]; delete r[`gpx_seg_${i}`]; i++; }
-                    if (combined.startsWith('TXT:')) combined = combined.substring(4);
-                    r.gpx = combined;
-
+                    let c = r.gpx || "", i = 1; while (r[`gpx_seg_${i}`] !== undefined) { c += r[`gpx_seg_${i}`]; delete r[`gpx_seg_${i}`]; i++; }
+                    if (c.startsWith('TXT:')) c = c.substring(4); r.gpx = c;
                     if (r.date) {
-                        let dStr = String(r.date).trim();
-                        if (dStr.startsWith("'")) dStr = dStr.substring(1);
-                        let mDash = dStr.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
-                        let mCh = dStr.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
-                        let mSlash = dStr.match(/(\d{4})\/(\d{1,2})\/(\d{1,2})/);
-                        
-                        if (mDash) r.date = `${mDash[1]}-${mDash[2].padStart(2,'0')}-${mDash[3].padStart(2,'0')}`;
-                        else if (mCh) r.date = `${mCh[1]}-${mCh[2].padStart(2,'0')}-${mCh[3].padStart(2,'0')}`;
-                        else if (mSlash) r.date = `${mSlash[1]}-${mSlash[2].padStart(2,'0')}-${mSlash[3].padStart(2,'0')}`;
-                        else if (dStr.includes('T')) {
-                            let tempDate = new Date(dStr);
-                            if (!isNaN(tempDate.getTime())) {
-                                let y = tempDate.getFullYear(), m = String(tempDate.getMonth() + 1).padStart(2, '0'), d = String(tempDate.getDate()).padStart(2, '0');
-                                r.date = `${y}-${m}-${d}`;
-                            } else { r.date = dStr.split('T')[0]; }
-                        } else { r.date = dStr; }
-                    }
-                    return r;
+                        let d = String(r.date).trim(); if (d.startsWith("'")) d = d.substring(1);
+                        let m1 = d.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/), m2 = d.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/), m3 = d.match(/(\d{4})\/(\d{1,2})\/(\d{1,2})/);
+                        if (m1) r.date = `${m1[1]}-${m1[2].padStart(2,'0')}-${m1[3].padStart(2,'0')}`;
+                        else if (m2) r.date = `${m2[1]}-${m2[2].padStart(2,'0')}-${m2[3].padStart(2,'0')}`;
+                        else if (m3) r.date = `${m3[1]}-${m3[2].padStart(2,'0')}-${m3[3].padStart(2,'0')}`;
+                        else if (d.includes('T')) { let t = new Date(d); r.date = !isNaN(t.getTime()) ? `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}` : d.split('T')[0]; } 
+                        else r.date = d;
+                    } return r;
                 });
-                updateYearOptions(); renderPoints(); hideLoading();
-                statusText.innerText = `已同步 ${data.length} 筆資料`;
-            }).catch((err) => { hideLoading(); uiModal.alert("失敗", "無法從雲端讀取資料。\n" + (err.message || '')); });
+                updateYearOptions(); renderPoints(); hideLoading(); statusText.innerText = `已同步 ${data.length} 筆`;
+            }).catch((err) => { hideLoading(); uiModal.alert("失敗", "讀取失敗。\n" + (err.message || '')); });
         }
 
-        function syncToSheetWithMessage(successMsg) {
-            const payload = myRecords.map(r => {
-                let exp = { ...r };
-                if (exp.date && !String(exp.date).startsWith("'")) exp.date = "'" + exp.date;
-                if (exp.gpx && typeof exp.gpx === 'string') {
-                    let safeStr = exp.gpx.startsWith('TXT:') ? exp.gpx : 'TXT:' + exp.gpx;
-                    if (safeStr.length > 40000) {
-                        const chunk = 40000; 
-                        exp.gpx = safeStr.substring(0, chunk);
-                        const totalChunks = Math.ceil(safeStr.length / chunk);
-                        for (let i = 1; i < totalChunks; i++) exp[`gpx_seg_${i}`] = safeStr.substring(i * chunk, (i + 1) * chunk);
-                    } else { exp.gpx = safeStr; }
-                }
-                delete exp.isBroken;
-                return exp;
+        function syncToSheetWithMessage(msg) {
+            const p = myRecords.map(r => {
+                let e = { ...r }; if (e.date && !String(e.date).startsWith("'")) e.date = "'" + e.date;
+                if (e.gpx && typeof e.gpx === 'string') {
+                    let s = e.gpx.startsWith('TXT:') ? e.gpx : 'TXT:' + e.gpx;
+                    if (s.length > 40000) { e.gpx = s.substring(0, 40000); for (let i = 1; i < Math.ceil(s.length / 40000); i++) e[`gpx_seg_${i}`] = s.substring(i * 40000, (i + 1) * 40000); } 
+                    else e.gpx = s;
+                } delete e.isBroken; delete e.stats; return e; // 移除 client-side 暫存的 stats 避免寫入 DB
             });
-            
-            fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ password: _sessionPassword, records: payload }) })
-            .then((r) => r.text())
-            .then((res) => {
-                if (res.includes("Unauthorized")) {
-                    _sessionPassword = null; hideLoading();
-                    uiModal.alert("驗證失敗", "密碼錯誤，資料未儲存。請重新操作並輸入正確密碼。");
-                    return;
-                }
+            fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ password: _sessionPassword, records: p }) }).then(r => r.text()).then(res => {
+                if (res.includes("Unauthorized")) { _sessionPassword = null; hideLoading(); uiModal.alert("驗證失敗", "密碼錯誤。"); return; }
                 if (res.includes("Error")) throw new Error(res);
-                statusText.innerText = "同步完成"; hideLoading(); renderDashboard();
-                if (successMsg) uiModal.alert("同步報告", successMsg);
-            })
-            .catch((err) => { hideLoading(); uiModal.alert("錯誤", "儲存至 Google Sheets 時發生錯誤。"); });
+                statusText.innerText = "同步完成"; hideLoading(); renderDashboard(); if (msg) uiModal.alert("報告", msg);
+            }).catch(() => { hideLoading(); uiModal.alert("錯誤", "儲存發生錯誤。"); });
         }
-        
         function syncToSheet() { syncToSheetWithMessage(null); }
-
         async function addRecord() {
             if (!await requireWriteAuth()) return;
-            const name = document.getElementById('input-name').value, lat = inputLat.value, lng = inputLng.value, date = document.getElementById('input-date').value;
-            if (!name || !lat || !date) { uiModal.alert("不完整", "請填寫名稱、座標與日期。"); return; }
-            myRecords.push({
-                id: 'r' + Date.now(), name, date, lat, lng,
-                status: document.querySelector('input[name="status"]:checked').value,
-                type: document.querySelector('input[name="type"]:checked').value, gpx: ""
-            });
-            document.getElementById('input-name').value = ''; inputLat.value = ''; inputLng.value = '';
-            if (tempMarker) map.removeLayer(tempMarker);
-            updateYearOptions(); renderPoints(); syncToSheet();
+            const n = document.getElementById('input-name').value, lat = inputLat.value, lng = inputLng.value, d = document.getElementById('input-date').value;
+            if (!n || !lat || !d) { uiModal.alert("不完整", "請填寫名稱、座標與日期。"); return; }
+            myRecords.push({ id: 'r'+Date.now(), name: n, date: d, lat, lng, status: document.querySelector('input[name="status"]:checked').value, type: document.querySelector('input[name="type"]:checked').value, gpx: "" });
+            document.getElementById('input-name').value = ''; inputLat.value = ''; inputLng.value = ''; if (tempMarker) map.removeLayer(tempMarker); updateYearOptions(); renderPoints(); syncToSheet();
         }
+        async function deleteRecord(id) { if (!await requireWriteAuth()) return; if (await uiModal.confirm("刪除", "確定要刪除嗎？")) { myRecords = myRecords.filter(r => r.id !== id); updateYearOptions(); renderPoints(); syncToSheet(); } }
+        async function toggleStatus(id) { if (!await requireWriteAuth()) return; const r = myRecords.find(x => x.id === id); if(r && r.type !== 'track') { r.status = r.status === 'climbed' ? 'unclimbed' : 'climbed'; renderPoints(); syncToSheet(); } }
 
-        async function deleteRecord(id) {
-            if (!await requireWriteAuth()) return;
-            if (await uiModal.confirm("刪除", "確定要刪除嗎？")) {
-                myRecords = myRecords.filter(r => r.id !== id); 
-                updateYearOptions(); renderPoints(); syncToSheet(); 
-            }
-        }
-
-        async function toggleStatus(id) {
-            if (!await requireWriteAuth()) return;
-            const r = myRecords.find(x => x.id === id);
-            if(r && r.type !== 'track') { r.status = r.status === 'climbed' ? 'unclimbed' : 'climbed'; renderPoints(); syncToSheet(); }
-        }
-
-        // ==========================================
-        // 🚀 進階統計圖表渲染邏輯更新
-        // ==========================================
         function renderDashboard() {
-            const selectedYear = yearFilter.value;
-            const filtered = myRecords.filter(r => {
-                if (selectedYear === 'all') return true;
-                return r.date && String(r.date).split('-')[0] === selectedYear;
+            const year = yearFilter.value;
+            const filtered = myRecords.filter(r => year === 'all' || (r.date && String(r.date).split('-')[0] === year));
+
+            const stats = { mt: filtered.filter(r => r.type === 'mountain' && r.status === 'climbed').length, rv: filtered.filter(r => r.type === 'river' && r.status === 'climbed').length, tk: filtered.filter(r => r.type === 'track').length, un: filtered.filter(r => r.status === 'unclimbed').length };
+            document.getElementById('stat-mt-count').innerText = stats.mt; document.getElementById('stat-rv-count').innerText = stats.rv; document.getElementById('stat-tk-count').innerText = stats.tk; document.getElementById('stat-un-count').innerText = stats.un;
+
+            const climbed = filtered.filter(r => r.status === 'climbed' || r.type === 'track').filter(r => r.date).sort((a, b) => new Date(b.date) - new Date(a.date));
+            if (climbed.length > 0) {
+                const diff = Math.floor((new Date().setHours(0,0,0,0) - new Date(climbed[0].date).setHours(0,0,0,0)) / 86400000);
+                document.getElementById('stat-recent').innerHTML = `距離上次出發已${diff === 0 ? "今天" : (diff < 0 ? "未來行程" : `過 <span class="text-3xl text-green-400 mx-1 font-black">${diff}</span> 天`)}<div class="mt-2 text-xs font-normal text-slate-300 bg-white/10 p-2 rounded-lg inline-flex items-center gap-1 border border-white/5 backdrop-blur-sm"><i class="ph-fill ph-map-pin"></i> ${climbed[0].name} (${climbed[0].date})</div>`;
+            } else document.getElementById('stat-recent').innerHTML = `尚無已完成的紀錄`;
+
+            const prog = filtered.length === 0 ? 0 : Math.round(((stats.mt + stats.rv + stats.tk) / filtered.length) * 100);
+            document.getElementById('stat-progress-text').innerText = `${prog}%`; setTimeout(() => document.getElementById('stat-progress-bar').style.width = `${prog}%`, 100);
+
+            // =====================================
+            // 處理硬核數據 (解析 GPX)
+            // =====================================
+            let tDist = 0, tEle = 0;
+            let prD = { v: 0, n: '-' }, prE = { v: 0, n: '-' }, prM = { v: 0, n: '-' };
+
+            filtered.forEach(r => {
+                if (r.type === 'track' && r.gpx) {
+                    if (!r.stats) {
+                        let g = r.gpx; if (!g.trim().startsWith('<')) { try { const d = LZString.decompressFromBase64(g); if(d) g = d; } catch(e){} }
+                        r.stats = calculateGPXStats(g); // 暫存解析結果，避免重複計算
+                    }
+                    if (r.stats.valid) {
+                        tDist += r.stats.distance; tEle += r.stats.elevationGain;
+                        if (r.stats.distance > prD.v) prD = { v: r.stats.distance, n: r.name };
+                        if (r.stats.elevationGain > prE.v) prE = { v: r.stats.elevationGain, n: r.name };
+                        if (r.stats.maxElevation > prM.v) prM = { v: r.stats.maxElevation, n: r.name };
+                    }
+                }
             });
 
-            // 基礎統計數據
-            const stats = {
-                mountain: filtered.filter(r => r.type === 'mountain' && r.status === 'climbed').length,
-                river: filtered.filter(r => r.type === 'river' && r.status === 'climbed').length,
-                track: filtered.filter(r => r.type === 'track').length,
-                unclimbed: filtered.filter(r => r.status === 'unclimbed').length
-            };
+            document.getElementById('stat-total-dist').innerText = tDist.toFixed(1);
+            document.getElementById('stat-total-ele').innerText = Math.round(tEle);
+            document.getElementById('pr-dist-val').innerText = prD.v.toFixed(1); document.getElementById('pr-dist-name').innerText = prD.n;
+            document.getElementById('pr-ele-val').innerText = Math.round(prE.v); document.getElementById('pr-ele-name').innerText = prE.n;
+            document.getElementById('pr-maxele-val').innerText = Math.round(prM.v); document.getElementById('pr-maxele-name').innerText = prM.n;
 
-            document.getElementById('stat-mt-count').innerText = stats.mountain;
-            document.getElementById('stat-rv-count').innerText = stats.river;
-            document.getElementById('stat-tk-count').innerText = stats.track;
-            document.getElementById('stat-un-count').innerText = stats.unclimbed;
-
-            // ------------------------------------------------
-            // 新增 1：近期活躍狀態計算
-            // ------------------------------------------------
-            const completedRecords = filtered.filter(r => r.status === 'climbed' || r.type === 'track').filter(r => r.date);
-            // 按照日期從新到舊排序
-            completedRecords.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-            if (completedRecords.length > 0) {
-                const lastRecord = completedRecords[0];
-                const lastDate = new Date(lastRecord.date);
-                const today = new Date();
-                
-                // 將時間歸零比較純天數
-                today.setHours(0,0,0,0);
-                lastDate.setHours(0,0,0,0);
-                
-                const diffTime = today - lastDate;
-                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-                
-                let dayText = diffDays === 0 ? "今天" : (diffDays < 0 ? "未來行程" : `過 <span class="text-3xl text-green-400 mx-1 font-black">${diffDays}</span> 天`);
-                
-                document.getElementById('stat-recent').innerHTML = `
-                    距離上次出發已${dayText}
-                    <div class="mt-2 text-xs font-normal text-slate-300 bg-white/10 p-2 rounded-lg inline-flex items-center gap-1 border border-white/5 backdrop-blur-sm">
-                        <i class="ph-fill ph-map-pin"></i> ${lastRecord.name} (${lastRecord.date})
-                    </div>
-                `;
-            } else {
-                document.getElementById('stat-recent').innerHTML = `尚無已完成的活動紀錄`;
-            }
-
-            // ------------------------------------------------
-            // 新增 2：地圖探索達成率
-            // ------------------------------------------------
-            const totalTarget = filtered.length;
-            const totalCompleted = stats.mountain + stats.river + stats.track;
-            const progress = totalTarget === 0 ? 0 : Math.round((totalCompleted / totalTarget) * 100);
-            
-            document.getElementById('stat-progress-text').innerText = `${progress}%`;
-            // 使用 setTimeout 讓進度條有滑動動畫效果
-            setTimeout(() => {
-                document.getElementById('stat-progress-bar').style.width = `${progress}%`;
-            }, 100);
-
-            // ------------------------------------------------
-            // 原有圖表：活動比例分佈 (Doughnut)
-            // ------------------------------------------------
-            const ctxType = document.getElementById('typeChart').getContext('2d');
+            // 圖表渲染
             if (charts.type) charts.type.destroy();
-            charts.type = new Chart(ctxType, {
-                type: 'doughnut',
-                data: {
-                    labels: ['登山', '溯溪', '軌跡'],
-                    datasets: [{
-                        data: [stats.mountain, stats.river, stats.track],
-                        backgroundColor: ['#22c55e', '#3b82f6', '#6366f1'],
-                        borderWidth: 0
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 10 } } } } }
-            });
+            charts.type = new Chart(document.getElementById('typeChart').getContext('2d'), { type: 'doughnut', data: { labels: ['登山','溯溪','軌跡'], datasets: [{ data: [stats.mt, stats.rv, stats.tk], backgroundColor: ['#22c55e', '#3b82f6', '#6366f1'], borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 10 } } } } } });
 
-            // ------------------------------------------------
-            // 原有圖表：年度趨勢 (Bar)
-            // ------------------------------------------------
-            const trendData = {};
-            myRecords.forEach(r => {
-                if (r.status === 'climbed' || r.type === 'track') {
-                    const y = r.date ? String(r.date).split('-')[0] : '未知';
-                    trendData[y] = (trendData[y] || 0) + 1;
-                }
-            });
-            const sortedYears = Object.keys(trendData).sort();
-            const ctxTrend = document.getElementById('yearTrendChart').getContext('2d');
+            const tData = {}; myRecords.forEach(r => { if (r.status === 'climbed' || r.type === 'track') { const y = r.date ? String(r.date).split('-')[0] : '未知'; tData[y] = (tData[y] || 0) + 1; } });
+            const sYears = Object.keys(tData).sort();
             if (charts.trend) charts.trend.destroy();
-            charts.trend = new Chart(ctxTrend, {
-                type: 'bar',
-                data: {
-                    labels: sortedYears,
-                    datasets: [{ label: '活動總次數', data: sortedYears.map(y => trendData[y]), backgroundColor: '#6366f1', borderRadius: 4 }]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    scales: { y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 10 } } }, x: { ticks: { font: { size: 10 } } } },
-                    plugins: { legend: { display: false } }
-                }
-            });
+            charts.trend = new Chart(document.getElementById('yearTrendChart').getContext('2d'), { type: 'bar', data: { labels: sYears, datasets: [{ data: sYears.map(y => tData[y]), backgroundColor: '#6366f1', borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 10 } } }, x: { ticks: { font: { size: 10 } } } }, plugins: { legend: { display: false } } } });
 
-            // ------------------------------------------------
-            // 新增 3：月度活躍熱區 (Polar Area)
-            // ------------------------------------------------
-            const monthCounts = Array(12).fill(0);
-            completedRecords.forEach(r => {
-                if(r.date) {
-                    const m = parseInt(String(r.date).split('-')[1]);
-                    if (!isNaN(m) && m >= 1 && m <= 12) {
-                        monthCounts[m-1]++;
-                    }
-                }
-            });
-
-            const ctxMonth = document.getElementById('monthChart').getContext('2d');
+            const mCounts = Array(12).fill(0); climbed.forEach(r => { if(r.date) { const m = parseInt(String(r.date).split('-')[1]); if (!isNaN(m) && m >= 1 && m <= 12) mCounts[m-1]++; } });
             if (charts.month) charts.month.destroy();
-            charts.month = new Chart(ctxMonth, {
-                type: 'polarArea',
-                data: {
-                    labels: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
-                    datasets: [{
-                        data: monthCounts,
-                        backgroundColor: [
-                            'rgba(59, 130, 246, 0.6)', 'rgba(59, 130, 246, 0.5)', 'rgba(34, 197, 94, 0.4)',
-                            'rgba(34, 197, 94, 0.5)', 'rgba(34, 197, 94, 0.6)', 'rgba(239, 68, 68, 0.6)',
-                            'rgba(239, 68, 68, 0.7)', 'rgba(239, 68, 68, 0.5)', 'rgba(249, 115, 22, 0.6)',
-                            'rgba(249, 115, 22, 0.5)', 'rgba(99, 102, 241, 0.5)', 'rgba(99, 102, 241, 0.6)'
-                        ],
-                        borderWidth: 1,
-                        borderColor: '#ffffff'
-                    }]
-                },
-                options: {
-                    responsive: true, 
-                    maintainAspectRatio: false,
-                    scales: { r: { ticks: { display: false } } }, // 隱藏同心圓刻度數字讓畫面更乾淨
-                    plugins: { 
-                        legend: { 
-                            position: window.innerWidth < 768 ? 'bottom' : 'right', 
-                            labels: { boxWidth: 10, font: {size: 10} } 
-                        } 
-                    }
-                }
-            });
+            charts.month = new Chart(document.getElementById('monthChart').getContext('2d'), { type: 'polarArea', data: { labels: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'], datasets: [{ data: mCounts, backgroundColor: ['rgba(59, 130, 246, 0.6)', 'rgba(59, 130, 246, 0.5)', 'rgba(34, 197, 94, 0.4)', 'rgba(34, 197, 94, 0.5)', 'rgba(34, 197, 94, 0.6)', 'rgba(239, 68, 68, 0.6)', 'rgba(239, 68, 68, 0.7)', 'rgba(239, 68, 68, 0.5)', 'rgba(249, 115, 22, 0.6)', 'rgba(249, 115, 22, 0.5)', 'rgba(99, 102, 241, 0.5)', 'rgba(99, 102, 241, 0.6)'], borderWidth: 1, borderColor: '#ffffff' }] }, options: { responsive: true, maintainAspectRatio: false, scales: { r: { ticks: { display: false } } }, plugins: { legend: { position: window.innerWidth < 768 ? 'bottom' : 'right', labels: { boxWidth: 10, font: {size: 10} } } } } });
         }
 
         function renderPoints() {
-            Object.values(mapLayers).forEach(l => { if (map.hasLayer(l)) map.removeLayer(l); });
-            mapLayers = {};
-            const list = document.getElementById('record-list'), year = yearFilter.value;
-            list.innerHTML = '';
+            Object.values(mapLayers).forEach(l => { if (map.hasLayer(l)) map.removeLayer(l); }); mapLayers = {};
+            const list = document.getElementById('record-list'), year = yearFilter.value; list.innerHTML = '';
             
-            myRecords.sort((a,b) => {
-                const numA = parseInt(String(a.id).replace(/\D/g, '')) || 0;
-                const numB = parseInt(String(b.id).replace(/\D/g, '')) || 0;
-                return numB - numA;
-            }).forEach(r => {
+            myRecords.sort((a,b) => (parseInt(String(b.id).replace(/\D/g, '')) || 0) - (parseInt(String(a.id).replace(/\D/g, '')) || 0)).forEach(r => {
                 if (year !== 'all' && r.date && String(r.date).split('-')[0] !== year) return;
                 let layer, isClimbed = r.status === 'climbed', color = isClimbed ? getYearColor(r.date) : '#ef4444';
                 
                 if (r.type === 'track' && r.gpx && typeof r.gpx === 'string') {
-                    let finalGpx = r.gpx;
-                    if (!finalGpx.trim().startsWith('<')) {
-                        try { const decompressed = LZString.decompressFromBase64(finalGpx); if (decompressed) finalGpx = decompressed; } 
-                        catch (e) {}
-                    }
-                    let isGpxValid = true;
-                    try {
-                        const checkDoc = new DOMParser().parseFromString(finalGpx, "text/xml");
-                        if (checkDoc.getElementsByTagName("parsererror").length > 0) isGpxValid = false;
-                    } catch(e) { isGpxValid = false; }
-
-                    if (isGpxValid && finalGpx.includes('<')) {
+                    let g = r.gpx; if (!g.trim().startsWith('<')) { try { const d = LZString.decompressFromBase64(g); if(d) g = d; } catch(e){} }
+                    let valid = true; try { if (new DOMParser().parseFromString(g, "text/xml").getElementsByTagName("parsererror").length > 0) valid = false; } catch(e) { valid = false; }
+                    if (valid && g.includes('<')) {
                         try {
-                            const blob = new Blob([finalGpx], {type: 'application/gpx+xml;charset=utf-8'});
-                            layer = new L.GPX(URL.createObjectURL(blob), {
-                                async: true,
-                                marker_options: { startIconUrl: '', endIconUrl: '', shadowUrl: '', wptIconUrls: { '': '' } },
-                                polyline_options: { color: color, opacity: 0.8, weight: 6 }
-                            }).addTo(map);
-                            layer.on('loaded', (e) => {
-                                layer._bounds = e.target.getBounds();
-                                if (Date.now() - r.id < 5000) map.fitBounds(layer._bounds);
-                            });
-                            layer.bindPopup(`<b>👣 ${r.name}</b><br>${r.date}`);
-                            mapLayers[r.id] = layer;
+                            layer = new L.GPX(URL.createObjectURL(new Blob([g], {type: 'application/gpx+xml;charset=utf-8'})), { async: true, marker_options: { startIconUrl: '', endIconUrl: '', shadowUrl: '', wptIconUrls: { '': '' } }, polyline_options: { color: color, opacity: 0.8, weight: 6 } }).addTo(map);
+                            layer.on('loaded', (e) => { layer._bounds = e.target.getBounds(); if (Date.now() - r.id < 5000) map.fitBounds(layer._bounds); });
+                            layer.bindPopup(`<b>👣 ${r.name}</b><br>${r.date}`); mapLayers[r.id] = layer;
                         } catch (err) { }
-                    } else { r.isBroken = true; }
+                    } else r.isBroken = true;
                 } else if (r.type !== 'track') {
-                    if (r.type === 'river') {
-                        layer = L.marker([r.lat, r.lng], { icon: L.divIcon({ className: '', html: `<div class="river-icon-div" style="border: 3px solid ${color}; color: ${color};"><i class="ph-fill ph-waves"></i></div>`, iconSize: [32, 32] }) });
-                    } else {
-                        layer = L.circleMarker([r.lat, r.lng], { color: '#fff', weight: 2, fillColor: color, fillOpacity: 1, radius: 9 });
-                    }
-                    layer.bindTooltip(r.name, { permanent: true, direction: 'bottom', className: 'custom-label', offset: [0, 8] });
-                    layer.addTo(map).bindPopup(`<b>${r.name}</b><br>${r.date}`);
-                    mapLayers[r.id] = layer;
+                    layer = r.type === 'river' ? L.marker([r.lat, r.lng], { icon: L.divIcon({ className: '', html: `<div class="river-icon-div" style="border: 3px solid ${color}; color: ${color};"><i class="ph-fill ph-waves"></i></div>`, iconSize: [32, 32] }) }) : L.circleMarker([r.lat, r.lng], { color: '#fff', weight: 2, fillColor: color, fillOpacity: 1, radius: 9 });
+                    layer.bindTooltip(r.name, { permanent: true, direction: 'bottom', className: 'custom-label', offset: [0, 8] }); layer.addTo(map).bindPopup(`<b>${r.name}</b><br>${r.date}`); mapLayers[r.id] = layer;
                 }
-                createListItem(list, r, color, isClimbed);
+                const div = document.createElement('div'); div.className = "bg-white p-4 rounded-xl border border-slate-100 hover:border-blue-200 hover:shadow-lg transition-all cursor-pointer group";
+                div.innerHTML = `<div class="flex items-start gap-3"><div class="p-2 rounded-lg" style="background-color:${color}15; color:${color}">${r.type === 'track' ? '<i class="ph-fill ph-path"></i>' : (r.type === 'river' ? '<i class="ph-fill ph-waves"></i>' : '<i class="ph-fill ph-mountains"></i>')}</div><div class="flex-1"><div class="font-bold text-slate-800 text-sm flex items-center">${r.name}${r.type === 'track' ? `<span class="text-[10px] bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded-md ml-2 font-bold">軌跡</span>${r.isBroken ? `<span class="text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded-md ml-1 font-bold"><i class="ph-fill ph-warning-circle"></i> 舊版損壞檔</span>` : ''}` : ''}</div><div class="text-[11px] text-slate-400 flex items-center gap-2 mt-1">${isClimbed ? `<span class="text-[10px] text-white px-2 py-0.5 rounded font-bold" style="background-color:${color}">${r.date.split('-')[0]}</span>` : `<span class="text-[10px] bg-red-100 text-red-600 px-2 py-0.5 rounded font-bold">待前往</span>`} <span><i class="ph ph-calendar-blank"></i> ${r.date}</span></div></div></div><div class="mt-3 flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">${r.type !== 'track' ? `<button class="text-[11px] font-bold bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1 rounded-md" onclick="toggleStatus('${r.id}'); event.stopPropagation();">狀態</button>` : ''}<button class="text-[11px] font-bold bg-red-50 hover:bg-red-100 text-red-500 px-3 py-1 rounded-md" onclick="deleteRecord('${r.id}'); event.stopPropagation();">刪除</button></div>`;
+                div.onclick = () => { const l = mapLayers[r.id]; if(l) { l._bounds ? map.fitBounds(l._bounds) : map.flyTo([r.lat, r.lng], 14); l.openPopup(); if(window.innerWidth < 768) toggleSidebar(); } };
+                list.appendChild(div);
             });
             if (document.getElementById('tab-dash').classList.contains('active')) renderDashboard();
         }
 
-        function createListItem(container, data, color, isClimbed) {
-            const isT = data.type === 'track', div = document.createElement('div');
-            div.className = "bg-white p-4 rounded-xl border border-slate-100 hover:border-blue-200 hover:shadow-lg transition-all cursor-pointer group";
-            let brokenHtml = data.isBroken ? `<span class="text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded-md ml-1 font-bold" title="XML 格式錯誤"><i class="ph-fill ph-warning-circle"></i> 舊版損壞檔</span>` : '';
-            const icon = isT ? '<i class="ph-fill ph-path"></i>' : (data.type === 'river' ? '<i class="ph-fill ph-waves"></i>' : '<i class="ph-fill ph-mountains"></i>');
-            const badge = isT ? `<span class="text-[10px] bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded-md ml-2 font-bold">軌跡</span>${brokenHtml}` : '';
-            const yBadge = isClimbed ? `<span class="text-[10px] text-white px-2 py-0.5 rounded font-bold" style="background-color:${color}">${data.date.split('-')[0]}</span>` : `<span class="text-[10px] bg-red-100 text-red-600 px-2 py-0.5 rounded font-bold">待前往</span>`;
-            
-            div.innerHTML = `
-                <div class="flex items-start gap-3">
-                    <div class="p-2 rounded-lg" style="background-color:${color}15; color:${color}">${icon}</div>
-                    <div class="flex-1">
-                        <div class="font-bold text-slate-800 text-sm flex items-center">${data.name}${badge}</div>
-                        <div class="text-[11px] text-slate-400 flex items-center gap-2 mt-1">${yBadge} <span><i class="ph ph-calendar-blank"></i> ${data.date}</span></div>
-                    </div>
-                </div>
-                <div class="mt-3 flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    ${!isT ? `<button class="text-[11px] font-bold bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1 rounded-md" onclick="toggleStatus('${data.id}'); event.stopPropagation();">狀態</button>` : ''}
-                    <button class="text-[11px] font-bold bg-red-50 hover:bg-red-100 text-red-500 px-3 py-1 rounded-md" onclick="deleteRecord('${data.id}'); event.stopPropagation();">刪除</button>
-                </div>`;
-            div.onclick = () => {
-                const l = mapLayers[data.id];
-                if(l) { l._bounds ? map.fitBounds(l._bounds) : map.flyTo([data.lat, data.lng], 14); l.openPopup(); if(window.innerWidth < 768) toggleSidebar(); }
-            };
-            container.appendChild(div);
-        }
-
         function showLoading(t) { loadingText.innerText = t; loadingOverlay.classList.remove('hidden'); }
         function hideLoading() { loadingOverlay.classList.add('hidden'); }
-
         window.onload = () => { document.getElementById('input-date').valueAsDate = new Date(); fetchFromSheet(); };
     </script>
 </body>
