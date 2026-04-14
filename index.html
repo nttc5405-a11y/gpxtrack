@@ -3,21 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>沈翔翔的雲端戶外地圖</title>
+    <title>雲端戶外地圖 V16.4 (進階統計儀表板)</title>
     
-    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- LZString (用於高強度字串壓縮與 Base64 編碼) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
 
     <style>
@@ -70,7 +65,6 @@
 </head>
 <body class="bg-gray-100 text-gray-800 flex relative overflow-hidden">
 
-    <!-- 讀取遮罩 -->
     <div id="loading-overlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[9999] flex flex-col items-center justify-center hidden">
         <div class="bg-white p-6 rounded-2xl shadow-2xl flex flex-col items-center">
             <div class="loader w-10 h-10 border-4 mb-4"></div>
@@ -78,7 +72,6 @@
         </div>
     </div>
 
-    <!-- 自定義對話框 -->
     <div id="custom-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[10000] flex items-center justify-center hidden p-4">
         <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden transform transition-all duration-200 modal-inactive" id="modal-box">
             <div class="p-6">
@@ -95,7 +88,6 @@
         </div>
     </div>
 
-    <!-- 手機版按鈕 -->
     <div class="absolute top-4 left-4 z-[1500] flex flex-col gap-2">
         <button onclick="toggleSidebar()" class="bg-white p-3 rounded-xl shadow-lg md:hidden hover:bg-gray-50 text-slate-700">
             <i class="ph ph-list text-2xl"></i>
@@ -105,7 +97,6 @@
         </button>
     </div>
 
-    <!-- 側邊欄 -->
     <aside id="sidebar" class="sidebar-transition absolute md:relative z-[2000] h-full w-full md:w-[420px] bg-white shadow-2xl flex flex-col transform -translate-x-full md:translate-x-0 shrink-0">
         <div class="bg-slate-800 text-white shrink-0">
             <div class="p-5 flex justify-between items-center">
@@ -113,7 +104,7 @@
                     <h1 class="text-xl font-bold flex items-center gap-2">
                         <i class="ph-fill ph-map-trifold text-2xl text-blue-400"></i>
                         雲端戶外地圖
-                        <span class="text-[10px] bg-indigo-500 px-2 py-0.5 rounded-full uppercase tracking-wider">V16.3</span>
+                        <span class="text-[10px] bg-indigo-500 px-2 py-0.5 rounded-full uppercase tracking-wider">V16.4</span>
                     </h1>
                     <p class="text-xs text-slate-400 mt-1 flex items-center gap-1">
                         <i class="ph ph-cloud-check"></i> <span id="status-text">準備就緒</span>
@@ -136,7 +127,6 @@
             </div>
         </div>
 
-        <!-- 地點 -->
         <div id="tab-point" class="tab-content active overflow-hidden">
             <div class="flex-1 overflow-y-auto custom-scrollbar p-5 space-y-5">
                 <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-4 shadow-sm">
@@ -186,10 +176,8 @@
             </div>
         </div>
 
-        <!-- 軌跡 -->
         <div id="tab-track" class="tab-content">
             <div class="p-8 flex-1 overflow-y-auto custom-scrollbar">
-                <!-- 支援 multiple 的檔案輸入 -->
                 <label for="gpx-file" class="flex flex-col items-center justify-center w-full h-56 border-3 border-blue-200 border-dashed rounded-3xl cursor-pointer bg-blue-50 hover:bg-blue-100 transition-all group relative">
                     <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center">
                         <div class="bg-blue-500 text-white p-4 rounded-full shadow-lg mb-4 group-hover:scale-110 transition-transform">
@@ -203,12 +191,31 @@
             </div>
         </div>
 
-        <!-- 統計 -->
         <div id="tab-dash" class="tab-content">
             <div class="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-6 bg-slate-50/50">
                 <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
-                    <i class="ph ph-presentation-chart"></i> 戶外活動概覽
+                    <i class="ph ph-presentation-chart"></i> 數據儀表板
                 </h2>
+                
+                <div class="grid grid-cols-1 gap-4">
+                    <div class="stat-card bg-gradient-to-r from-slate-800 to-slate-700 text-white shadow-md relative overflow-hidden">
+                        <i class="ph-fill ph-boot text-white/10 text-6xl absolute -right-2 -bottom-2"></i>
+                        <p class="text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-2">近期活躍狀態</p>
+                        <div id="stat-recent" class="text-sm font-bold relative z-10">計算中...</div>
+                    </div>
+                    
+                    <div class="stat-card shadow-sm border border-blue-100">
+                        <div class="flex justify-between items-end mb-2">
+                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1"><i class="ph-fill ph-target"></i> 總體探索進度</p>
+                            <span id="stat-progress-text" class="text-sm font-black text-blue-600">0%</span>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                            <div id="stat-progress-bar" class="bg-blue-500 h-2.5 rounded-full transition-all duration-1000 ease-out" style="width: 0%"></div>
+                        </div>
+                        <p class="text-[10px] text-slate-400 mt-2 text-right">已完成 / 總點位</p>
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-2 gap-4">
                     <div class="stat-card bg-gradient-to-br from-white to-green-50">
                         <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">登山紀錄</p>
@@ -239,13 +246,22 @@
                         </div>
                     </div>
                 </div>
-                <div class="stat-card flex flex-col">
-                    <p class="text-sm font-bold text-slate-700 mb-2">活動比例分佈</p>
-                    <div class="relative h-48 w-full flex justify-center"><canvas id="typeChart"></canvas></div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="stat-card flex flex-col">
+                        <p class="text-sm font-bold text-slate-700 mb-2">活動比例</p>
+                        <div class="relative h-40 w-full flex justify-center"><canvas id="typeChart"></canvas></div>
+                    </div>
+                    <div class="stat-card flex flex-col">
+                        <p class="text-sm font-bold text-slate-700 mb-2">年度趨勢</p>
+                        <div class="relative h-40 w-full"><canvas id="yearTrendChart"></canvas></div>
+                    </div>
                 </div>
-                <div class="stat-card flex flex-col">
-                    <p class="text-sm font-bold text-slate-700 mb-2">年度活動趨勢</p>
-                    <div class="relative h-48 w-full"><canvas id="yearTrendChart"></canvas></div>
+
+                <div class="stat-card flex flex-col mb-10">
+                    <p class="text-sm font-bold text-slate-700 mb-2 flex items-center gap-1"><i class="ph-fill ph-thermometer"></i> 月度活躍熱區</p>
+                    <p class="text-xs text-slate-400 mb-4">分析歷年來各月份的出行頻率</p>
+                    <div class="relative h-64 w-full flex justify-center"><canvas id="monthChart"></canvas></div>
                 </div>
             </div>
         </div>
@@ -259,9 +275,6 @@
     <script>
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwzJjXB2LT1nU6hLFTpbRvZQc-bwL_hbPtPEKSholS9qaO6wk-stNT4BscPmnE5xWTNPA/exec";
 
-        // ==============================
-        // 🔒 寫入保護（密碼存於後端 Apps Script）
-        // ==============================
         let _sessionPassword = null;
 
         async function requireWriteAuth() {
@@ -298,14 +311,10 @@
         });
 
         const uiModal = {
-            target: document.getElementById('custom-modal'),
-            box: document.getElementById('modal-box'),
-            title: document.getElementById('modal-title'),
-            msg: document.getElementById('modal-message'),
-            inputArea: document.getElementById('modal-prompt-area'),
-            input: document.getElementById('modal-input'),
-            btnCancel: document.getElementById('modal-cancel'),
-            btnOk: document.getElementById('modal-ok'),
+            target: document.getElementById('custom-modal'), box: document.getElementById('modal-box'),
+            title: document.getElementById('modal-title'), msg: document.getElementById('modal-message'),
+            inputArea: document.getElementById('modal-prompt-area'), input: document.getElementById('modal-input'),
+            btnCancel: document.getElementById('modal-cancel'), btnOk: document.getElementById('modal-ok'),
             alert(title, msg) {
                 return new Promise(res => {
                     this.show(title, msg, false, false);
@@ -328,20 +337,13 @@
                 });
             },
             show(title, msg, showCancel, showInput) {
-                this.title.innerText = title;
-                this.msg.innerText = msg;
-                this.btnCancel.classList.toggle('hidden', !showCancel);
-                this.inputArea.classList.toggle('hidden', !showInput);
+                this.title.innerText = title; this.msg.innerText = msg;
+                this.btnCancel.classList.toggle('hidden', !showCancel); this.inputArea.classList.toggle('hidden', !showInput);
                 this.target.classList.remove('hidden');
-                setTimeout(() => {
-                    this.box.classList.remove('modal-inactive');
-                    this.box.classList.add('modal-active');
-                    if(showInput) this.input.focus();
-                }, 10);
+                setTimeout(() => { this.box.classList.remove('modal-inactive'); this.box.classList.add('modal-active'); if(showInput) this.input.focus(); }, 10);
             },
             hide() {
-                this.box.classList.remove('modal-active');
-                this.box.classList.add('modal-inactive');
+                this.box.classList.remove('modal-active'); this.box.classList.add('modal-inactive');
                 setTimeout(() => this.target.classList.add('hidden'), 200);
             }
         };
@@ -349,7 +351,7 @@
         let myRecords = [];
         let mapLayers = {}; 
         let tempMarker = null;
-        let charts = { type: null, trend: null };
+        let charts = { type: null, trend: null, month: null }; // 新增 month 圖表容器
 
         const loadingOverlay = document.getElementById('loading-overlay');
         const loadingText = document.getElementById('loading-text');
@@ -463,10 +465,7 @@
                 const cleanString = cleanGPX(gpxString);
                 const parser = new DOMParser();
                 const xmlDoc = parser.parseFromString(cleanString, "text/xml");
-                
-                if (xmlDoc.getElementsByTagName("parsererror").length > 0) {
-                    return cleanString;
-                }
+                if (xmlDoc.getElementsByTagName("parsererror").length > 0) return cleanString;
                 
                 const trkpts = xmlDoc.getElementsByTagName("trkpt");
                 const total = trkpts.length;
@@ -479,41 +478,27 @@
                         const seg = trksegs[s];
                         const pts = seg.getElementsByTagName("trkpt");
                         const nodesToRemove = [];
-                        
-                        for (let i = 0; i < pts.length; i++) {
-                            if (i % step !== 0) nodesToRemove.push(pts[i]);
-                        }
-                        
-                        nodesToRemove.forEach(node => {
-                            if(node && node.parentNode) node.parentNode.removeChild(node);
-                        });
+                        for (let i = 0; i < pts.length; i++) if (i % step !== 0) nodesToRemove.push(pts[i]);
+                        nodesToRemove.forEach(node => { if(node && node.parentNode) node.parentNode.removeChild(node); });
                     }
                 }
-                
                 const serializer = new XMLSerializer();
                 return serializer.serializeToString(xmlDoc);
-            } catch (e) { 
-                return cleanGPX(gpxString);
-            }
+            } catch (e) { return cleanGPX(gpxString); }
         }
 
-        // --- 批量處理上傳 ---
         async function handleGPXUpload(input) {
             if (!await requireWriteAuth()) { input.value = ''; return; }
             const files = input.files;
             if (!files || files.length === 0) return;
             
             showLoading(`準備處理 ${files.length} 個檔案...`);
-            
-            let successCount = 0;
-            let failCount = 0;
-            let needsSync = false;
+            let successCount = 0, failCount = 0, needsSync = false;
 
             const processFile = (file) => {
                 return new Promise((resolve) => {
                     const reader = new FileReader();
                     reader.readAsText(file, "UTF-8");
-                    
                     reader.onload = () => {
                         try {
                             let gpxContent = reader.result;
@@ -521,39 +506,18 @@
                             
                             let trackDate = extractDateFromGPX(gpxContent);
                             gpxContent = cleanGPX(gpxContent);
-
-                            if (gpxContent.length > 500000) {
-                                gpxContent = compressGPX(gpxContent);
-                            }
-
+                            if (gpxContent.length > 500000) gpxContent = compressGPX(gpxContent);
                             let compressedBase64 = LZString.compressToBase64(gpxContent);
-                            
-                            // 自動以檔名作為軌跡名稱 (去除副檔名)
                             const defaultName = file.name.replace(/\.[^/.]+$/, "");
 
                             myRecords.push({
-                                id: 'r' + Date.now() + Math.floor(Math.random() * 1000), // 避免 ID 重複
-                                name: defaultName, 
-                                date: trackDate,
-                                lat: 0, lng: 0, status: 'climbed', type: 'track', 
-                                gpx: compressedBase64 
+                                id: 'r' + Date.now() + Math.floor(Math.random() * 1000),
+                                name: defaultName, date: trackDate, lat: 0, lng: 0, status: 'climbed', type: 'track', gpx: compressedBase64 
                             });
-                            
-                            successCount++;
-                            needsSync = true;
-                            resolve();
-                        } catch (err) { 
-                            console.error(`處理 ${file.name} 失敗:`, err);
-                            failCount++;
-                            resolve();
-                        }
+                            successCount++; needsSync = true; resolve();
+                        } catch (err) { failCount++; resolve(); }
                     };
-                    
-                    reader.onerror = () => {
-                        console.error(`讀取 ${file.name} 失敗`);
-                        failCount++;
-                        resolve();
-                    };
+                    reader.onerror = () => { failCount++; resolve(); };
                 });
             };
 
@@ -563,71 +527,43 @@
             }
 
             input.value = '';
-
             if (needsSync) {
                 showLoading("檔案處理完畢，正在同步至雲端...");
-                updateYearOptions(); 
-                renderPoints(); 
-                switchTab('point'); 
+                updateYearOptions(); renderPoints(); switchTab('point'); 
                 syncToSheetWithMessage(`批量上傳完成！\n成功: ${successCount} 筆\n失敗: ${failCount} 筆`);
             } else {
-                hideLoading();
-                uiModal.alert("上傳結果", `未成功載入任何檔案。\n失敗: ${failCount} 筆`);
+                hideLoading(); uiModal.alert("上傳結果", `未成功載入任何檔案。\n失敗: ${failCount} 筆`);
             }
         }
 
-        // --- 動態抓取所有分段與日期還原保護 ---
         function fetchFromSheet() {
             showLoading("同步中...");
             fetch(GOOGLE_SCRIPT_URL).then(r => r.json()).then(data => {
-                if (!Array.isArray(data)) {
-                    throw new Error(data.error || "後端回傳格式錯誤");
-                }
+                if (!Array.isArray(data)) throw new Error(data.error || "後端回傳格式錯誤");
                 myRecords = data.map(r => {
                     let combined = r.gpx || "";
-                    
-                    // 動態組裝所有 gpx_seg_X
                     let i = 1;
-                    while (r[`gpx_seg_${i}`] !== undefined) { 
-                        combined += r[`gpx_seg_${i}`]; 
-                        delete r[`gpx_seg_${i}`]; 
-                        i++; 
-                    }
-                    
-                    if (combined.startsWith('TXT:')) {
-                        combined = combined.substring(4);
-                    }
+                    while (r[`gpx_seg_${i}`] !== undefined) { combined += r[`gpx_seg_${i}`]; delete r[`gpx_seg_${i}`]; i++; }
+                    if (combined.startsWith('TXT:')) combined = combined.substring(4);
                     r.gpx = combined;
 
-                    // 【日期防跑掉機制】：解析並鎖定日期，移除試算表產生的任何干擾
                     if (r.date) {
                         let dStr = String(r.date).trim();
-                        if (dStr.startsWith("'")) dStr = dStr.substring(1); // 剝除純文字單引號保護
-
+                        if (dStr.startsWith("'")) dStr = dStr.substring(1);
                         let mDash = dStr.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
                         let mCh = dStr.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
                         let mSlash = dStr.match(/(\d{4})\/(\d{1,2})\/(\d{1,2})/);
                         
-                        if (mDash) {
-                            r.date = `${mDash[1]}-${mDash[2].padStart(2,'0')}-${mDash[3].padStart(2,'0')}`;
-                        } else if (mCh) {
-                            r.date = `${mCh[1]}-${mCh[2].padStart(2,'0')}-${mCh[3].padStart(2,'0')}`;
-                        } else if (mSlash) {
-                            r.date = `${mSlash[1]}-${mSlash[2].padStart(2,'0')}-${mSlash[3].padStart(2,'0')}`;
-                        } else if (dStr.includes('T')) {
-                            // 舊資料若有 T (UTC時區) 則嘗試還原本地時間
+                        if (mDash) r.date = `${mDash[1]}-${mDash[2].padStart(2,'0')}-${mDash[3].padStart(2,'0')}`;
+                        else if (mCh) r.date = `${mCh[1]}-${mCh[2].padStart(2,'0')}-${mCh[3].padStart(2,'0')}`;
+                        else if (mSlash) r.date = `${mSlash[1]}-${mSlash[2].padStart(2,'0')}-${mSlash[3].padStart(2,'0')}`;
+                        else if (dStr.includes('T')) {
                             let tempDate = new Date(dStr);
                             if (!isNaN(tempDate.getTime())) {
-                                let y = tempDate.getFullYear();
-                                let m = String(tempDate.getMonth() + 1).padStart(2, '0');
-                                let d = String(tempDate.getDate()).padStart(2, '0');
+                                let y = tempDate.getFullYear(), m = String(tempDate.getMonth() + 1).padStart(2, '0'), d = String(tempDate.getDate()).padStart(2, '0');
                                 r.date = `${y}-${m}-${d}`;
-                            } else {
-                                r.date = dStr.split('T')[0];
-                            }
-                        } else {
-                            r.date = dStr;
-                        }
+                            } else { r.date = dStr.split('T')[0]; }
+                        } else { r.date = dStr; }
                     }
                     return r;
                 });
@@ -636,32 +572,19 @@
             }).catch((err) => { hideLoading(); uiModal.alert("失敗", "無法從雲端讀取資料。\n" + (err.message || '')); });
         }
 
-        // --- 支援自訂訊息的同步函式，加入日期純文字保護 ---
         function syncToSheetWithMessage(successMsg) {
             const payload = myRecords.map(r => {
                 let exp = { ...r };
-                
-                // 【日期防跑掉機制】：寫入時強制加上單引號，強迫 Google Sheets 將其視為純文字，永不進行時區轉換
-                if (exp.date && !String(exp.date).startsWith("'")) {
-                    exp.date = "'" + exp.date;
-                }
-
+                if (exp.date && !String(exp.date).startsWith("'")) exp.date = "'" + exp.date;
                 if (exp.gpx && typeof exp.gpx === 'string') {
                     let safeStr = exp.gpx.startsWith('TXT:') ? exp.gpx : 'TXT:' + exp.gpx;
-                    
                     if (safeStr.length > 40000) {
                         const chunk = 40000; 
                         exp.gpx = safeStr.substring(0, chunk);
                         const totalChunks = Math.ceil(safeStr.length / chunk);
-                        
-                        for (let i = 1; i < totalChunks; i++) {
-                            exp[`gpx_seg_${i}`] = safeStr.substring(i * chunk, (i + 1) * chunk);
-                        }
-                    } else {
-                        exp.gpx = safeStr;
-                    }
+                        for (let i = 1; i < totalChunks; i++) exp[`gpx_seg_${i}`] = safeStr.substring(i * chunk, (i + 1) * chunk);
+                    } else { exp.gpx = safeStr; }
                 }
-                
                 delete exp.isBroken;
                 return exp;
             });
@@ -670,29 +593,18 @@
             .then((r) => r.text())
             .then((res) => {
                 if (res.includes("Unauthorized")) {
-                    _sessionPassword = null;
-                    hideLoading();
+                    _sessionPassword = null; hideLoading();
                     uiModal.alert("驗證失敗", "密碼錯誤，資料未儲存。請重新操作並輸入正確密碼。");
                     return;
                 }
                 if (res.includes("Error")) throw new Error(res);
-                statusText.innerText = "同步完成";
-                hideLoading();
-                renderDashboard();
-                if (successMsg) {
-                    uiModal.alert("同步報告", successMsg);
-                }
+                statusText.innerText = "同步完成"; hideLoading(); renderDashboard();
+                if (successMsg) uiModal.alert("同步報告", successMsg);
             })
-            .catch((err) => { 
-                console.error(err);
-                hideLoading(); 
-                uiModal.alert("錯誤", "儲存至 Google Sheets 時發生錯誤。"); 
-            });
+            .catch((err) => { hideLoading(); uiModal.alert("錯誤", "儲存至 Google Sheets 時發生錯誤。"); });
         }
         
-        function syncToSheet() {
-            syncToSheetWithMessage(null);
-        }
+        function syncToSheet() { syncToSheetWithMessage(null); }
 
         async function addRecord() {
             if (!await requireWriteAuth()) return;
@@ -701,8 +613,7 @@
             myRecords.push({
                 id: 'r' + Date.now(), name, date, lat, lng,
                 status: document.querySelector('input[name="status"]:checked').value,
-                type: document.querySelector('input[name="type"]:checked').value,
-                gpx: ""
+                type: document.querySelector('input[name="type"]:checked').value, gpx: ""
             });
             document.getElementById('input-name').value = ''; inputLat.value = ''; inputLng.value = '';
             if (tempMarker) map.removeLayer(tempMarker);
@@ -723,21 +634,21 @@
             if(r && r.type !== 'track') { r.status = r.status === 'climbed' ? 'unclimbed' : 'climbed'; renderPoints(); syncToSheet(); }
         }
 
-        // --- 修正統計頁面數值邏輯 ---
+        // ==========================================
+        // 🚀 進階統計圖表渲染邏輯更新
+        // ==========================================
         function renderDashboard() {
             const selectedYear = yearFilter.value;
-            
-            // 基礎資料集：如果選擇全部，就用所有資料；否則只過濾出符合該年份的資料
             const filtered = myRecords.filter(r => {
                 if (selectedYear === 'all') return true;
                 return r.date && String(r.date).split('-')[0] === selectedYear;
             });
 
-            // 統計卡片數值：精準使用過濾後的資料
+            // 基礎統計數據
             const stats = {
                 mountain: filtered.filter(r => r.type === 'mountain' && r.status === 'climbed').length,
                 river: filtered.filter(r => r.type === 'river' && r.status === 'climbed').length,
-                track: filtered.filter(r => r.type === 'track').length, // 軌跡預設就是 climbed 狀態
+                track: filtered.filter(r => r.type === 'track').length,
                 unclimbed: filtered.filter(r => r.status === 'unclimbed').length
             };
 
@@ -746,7 +657,53 @@
             document.getElementById('stat-tk-count').innerText = stats.track;
             document.getElementById('stat-un-count').innerText = stats.unclimbed;
 
-            // 活動比例圓餅圖
+            // ------------------------------------------------
+            // 新增 1：近期活躍狀態計算
+            // ------------------------------------------------
+            const completedRecords = filtered.filter(r => r.status === 'climbed' || r.type === 'track').filter(r => r.date);
+            // 按照日期從新到舊排序
+            completedRecords.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            if (completedRecords.length > 0) {
+                const lastRecord = completedRecords[0];
+                const lastDate = new Date(lastRecord.date);
+                const today = new Date();
+                
+                // 將時間歸零比較純天數
+                today.setHours(0,0,0,0);
+                lastDate.setHours(0,0,0,0);
+                
+                const diffTime = today - lastDate;
+                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                
+                let dayText = diffDays === 0 ? "今天" : (diffDays < 0 ? "未來行程" : `過 <span class="text-3xl text-green-400 mx-1 font-black">${diffDays}</span> 天`);
+                
+                document.getElementById('stat-recent').innerHTML = `
+                    距離上次出發已${dayText}
+                    <div class="mt-2 text-xs font-normal text-slate-300 bg-white/10 p-2 rounded-lg inline-flex items-center gap-1 border border-white/5 backdrop-blur-sm">
+                        <i class="ph-fill ph-map-pin"></i> ${lastRecord.name} (${lastRecord.date})
+                    </div>
+                `;
+            } else {
+                document.getElementById('stat-recent').innerHTML = `尚無已完成的活動紀錄`;
+            }
+
+            // ------------------------------------------------
+            // 新增 2：地圖探索達成率
+            // ------------------------------------------------
+            const totalTarget = filtered.length;
+            const totalCompleted = stats.mountain + stats.river + stats.track;
+            const progress = totalTarget === 0 ? 0 : Math.round((totalCompleted / totalTarget) * 100);
+            
+            document.getElementById('stat-progress-text').innerText = `${progress}%`;
+            // 使用 setTimeout 讓進度條有滑動動畫效果
+            setTimeout(() => {
+                document.getElementById('stat-progress-bar').style.width = `${progress}%`;
+            }, 100);
+
+            // ------------------------------------------------
+            // 原有圖表：活動比例分佈 (Doughnut)
+            // ------------------------------------------------
             const ctxType = document.getElementById('typeChart').getContext('2d');
             if (charts.type) charts.type.destroy();
             charts.type = new Chart(ctxType, {
@@ -759,10 +716,12 @@
                         borderWidth: 0
                     }]
                 },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } } }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 10 } } } } }
             });
 
-            // 年度趨勢圖：為了看出趨勢，長條圖固定顯示「全部年份」的資料，不受上方選單影響
+            // ------------------------------------------------
+            // 原有圖表：年度趨勢 (Bar)
+            // ------------------------------------------------
             const trendData = {};
             myRecords.forEach(r => {
                 if (r.status === 'climbed' || r.type === 'track') {
@@ -785,6 +744,50 @@
                     plugins: { legend: { display: false } }
                 }
             });
+
+            // ------------------------------------------------
+            // 新增 3：月度活躍熱區 (Polar Area)
+            // ------------------------------------------------
+            const monthCounts = Array(12).fill(0);
+            completedRecords.forEach(r => {
+                if(r.date) {
+                    const m = parseInt(String(r.date).split('-')[1]);
+                    if (!isNaN(m) && m >= 1 && m <= 12) {
+                        monthCounts[m-1]++;
+                    }
+                }
+            });
+
+            const ctxMonth = document.getElementById('monthChart').getContext('2d');
+            if (charts.month) charts.month.destroy();
+            charts.month = new Chart(ctxMonth, {
+                type: 'polarArea',
+                data: {
+                    labels: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
+                    datasets: [{
+                        data: monthCounts,
+                        backgroundColor: [
+                            'rgba(59, 130, 246, 0.6)', 'rgba(59, 130, 246, 0.5)', 'rgba(34, 197, 94, 0.4)',
+                            'rgba(34, 197, 94, 0.5)', 'rgba(34, 197, 94, 0.6)', 'rgba(239, 68, 68, 0.6)',
+                            'rgba(239, 68, 68, 0.7)', 'rgba(239, 68, 68, 0.5)', 'rgba(249, 115, 22, 0.6)',
+                            'rgba(249, 115, 22, 0.5)', 'rgba(99, 102, 241, 0.5)', 'rgba(99, 102, 241, 0.6)'
+                        ],
+                        borderWidth: 1,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    scales: { r: { ticks: { display: false } } }, // 隱藏同心圓刻度數字讓畫面更乾淨
+                    plugins: { 
+                        legend: { 
+                            position: window.innerWidth < 768 ? 'bottom' : 'right', 
+                            labels: { boxWidth: 10, font: {size: 10} } 
+                        } 
+                    }
+                }
+            });
         }
 
         function renderPoints() {
@@ -802,59 +805,33 @@
                 let layer, isClimbed = r.status === 'climbed', color = isClimbed ? getYearColor(r.date) : '#ef4444';
                 
                 if (r.type === 'track' && r.gpx && typeof r.gpx === 'string') {
-                    
                     let finalGpx = r.gpx;
                     if (!finalGpx.trim().startsWith('<')) {
-                        try {
-                            const decompressed = LZString.decompressFromBase64(finalGpx);
-                            if (decompressed) finalGpx = decompressed;
-                        } catch (e) {
-                            console.warn("Base64 解壓縮失敗", e);
-                        }
+                        try { const decompressed = LZString.decompressFromBase64(finalGpx); if (decompressed) finalGpx = decompressed; } 
+                        catch (e) {}
                     }
-
                     let isGpxValid = true;
                     try {
-                        const parser = new DOMParser();
-                        const checkDoc = parser.parseFromString(finalGpx, "text/xml");
+                        const checkDoc = new DOMParser().parseFromString(finalGpx, "text/xml");
                         if (checkDoc.getElementsByTagName("parsererror").length > 0) isGpxValid = false;
                     } catch(e) { isGpxValid = false; }
 
                     if (isGpxValid && finalGpx.includes('<')) {
                         try {
                             const blob = new Blob([finalGpx], {type: 'application/gpx+xml;charset=utf-8'});
-                            const url = URL.createObjectURL(blob);
-                            
-                            layer = new L.GPX(url, {
+                            layer = new L.GPX(URL.createObjectURL(blob), {
                                 async: true,
-                                marker_options: { 
-                                    startIconUrl: '', endIconUrl: '', shadowUrl: '',
-                                    wptIconUrls: { 
-                                        '': '', 'Flag, Red': '', 'Flag, Blue': '', 'Flag, Green': '', 'Flag, Yellow': '',
-                                        'Pin, Red': '', 'Pin, Blue': '', 'Pin, Green': '', 'Pin, Yellow': '',
-                                        'Waypoint': '', 'Camp': '', 'Summit': '', 'Trailhead': '', 'Water': ''
-                                    }
-                                },
+                                marker_options: { startIconUrl: '', endIconUrl: '', shadowUrl: '', wptIconUrls: { '': '' } },
                                 polyline_options: { color: color, opacity: 0.8, weight: 6 }
                             }).addTo(map);
-                            
-                            layer.on('error', (e) => {
-                                console.warn(`軌跡 [${r.name}] 渲染被套件中止:`, e);
-                            });
-                            
                             layer.on('loaded', (e) => {
                                 layer._bounds = e.target.getBounds();
                                 if (Date.now() - r.id < 5000) map.fitBounds(layer._bounds);
-                                // 取消 setTimeout 釋放暫存機制，防止大型檔案解析超時而報 null 錯誤
                             });
-                            
                             layer.bindPopup(`<b>👣 ${r.name}</b><br>${r.date}`);
                             mapLayers[r.id] = layer;
                         } catch (err) { }
-                    } else {
-                        console.warn(`已攔截損壞的軌跡: [${r.name}]`);
-                        r.isBroken = true; 
-                    }
+                    } else { r.isBroken = true; }
                 } else if (r.type !== 'track') {
                     if (r.type === 'river') {
                         layer = L.marker([r.lat, r.lng], { icon: L.divIcon({ className: '', html: `<div class="river-icon-div" style="border: 3px solid ${color}; color: ${color};"><i class="ph-fill ph-waves"></i></div>`, iconSize: [32, 32] }) });
@@ -865,7 +842,6 @@
                     layer.addTo(map).bindPopup(`<b>${r.name}</b><br>${r.date}`);
                     mapLayers[r.id] = layer;
                 }
-                
                 createListItem(list, r, color, isClimbed);
             });
             if (document.getElementById('tab-dash').classList.contains('active')) renderDashboard();
@@ -874,9 +850,7 @@
         function createListItem(container, data, color, isClimbed) {
             const isT = data.type === 'track', div = document.createElement('div');
             div.className = "bg-white p-4 rounded-xl border border-slate-100 hover:border-blue-200 hover:shadow-lg transition-all cursor-pointer group";
-            
             let brokenHtml = data.isBroken ? `<span class="text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded-md ml-1 font-bold" title="XML 格式錯誤"><i class="ph-fill ph-warning-circle"></i> 舊版損壞檔</span>` : '';
-
             const icon = isT ? '<i class="ph-fill ph-path"></i>' : (data.type === 'river' ? '<i class="ph-fill ph-waves"></i>' : '<i class="ph-fill ph-mountains"></i>');
             const badge = isT ? `<span class="text-[10px] bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded-md ml-2 font-bold">軌跡</span>${brokenHtml}` : '';
             const yBadge = isClimbed ? `<span class="text-[10px] text-white px-2 py-0.5 rounded font-bold" style="background-color:${color}">${data.date.split('-')[0]}</span>` : `<span class="text-[10px] bg-red-100 text-red-600 px-2 py-0.5 rounded font-bold">待前往</span>`;
