@@ -61,6 +61,27 @@
             border: 1px solid #f1f5f9;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
+
+        /* ===== 統計頁寬版版面（只在桌機／平板 ≥768px 生效；手機維持原本全螢幕側欄） ===== */
+        #sidebar { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s ease; }
+        @media (min-width: 768px) {
+            body.dash-wide #sidebar { width: min(820px, 60vw); }
+            body.map-collapsed #sidebar { width: 100%; }
+            body.map-collapsed #map { display: none; }
+            body.dash-wide .dash-inner { max-width: 1200px; margin: 0 auto; width: 100%; }
+            /* 卡片改多欄排列 */
+            body.dash-wide #dash-top { grid-template-columns: 1fr 1fr; }
+            body.dash-wide #dash-counts { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+            body.dash-wide #dash-charts { grid-template-columns: 1fr 1fr; }
+            body.dash-wide .chart-box { height: 15rem; }
+            body.dash-wide .chart-box-lg { height: 20rem; }
+            body.dash-wide #hard-cards { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+            body.dash-wide #dash-view-hardcore:not(.hidden) { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: start; }
+            body.dash-wide #dash-view-hardcore > * { margin-top: 0 !important; }
+            body.dash-wide #dash-view-hardcore > .span-2 { grid-column: span 2; }
+            body.map-collapsed #track-detail-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 0.5rem; }
+            body.map-collapsed #track-detail-list > * { margin-top: 0 !important; }
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 flex relative overflow-hidden">
@@ -154,13 +175,15 @@
         </div>
 
         <div id="tab-dash" class="tab-content">
-            <div class="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-6 bg-slate-50/50">
-                <div class="flex items-center justify-between">
+            <div class="flex-1 overflow-y-auto custom-scrollbar p-6 bg-slate-50/50"><div class="dash-inner space-y-6">
+                <div class="flex items-center justify-between gap-2">
                     <span class="text-xs font-black text-slate-400 tracking-widest flex items-center gap-1"><i class="ph ph-calendar"></i> 統計範圍</span>
+                    <div class="flex-1"></div>
+                    <button id="map-toggle-btn" onclick="toggleMapCollapse()" class="hidden md:flex items-center gap-1 text-xs font-bold text-slate-600 bg-white border border-slate-300 hover:bg-slate-100 rounded-lg px-3 py-1.5 transition" title="收合右側地圖，讓統計頁全寬顯示"><i class="ph ph-sidebar-simple"></i> <span>收合地圖</span></button>
                     <select id="dash-year-filter" onchange="yearFilter.value = this.value; renderPoints(); renderDashboard();" class="text-sm border border-slate-300 rounded-lg px-3 py-1 bg-white outline-none"><option value="all">全部年份</option></select>
                 </div>
 
-                <div class="grid grid-cols-1 gap-4">
+                <div id="dash-top" class="grid grid-cols-1 gap-4">
                     <div class="stat-card bg-gradient-to-r from-slate-800 to-slate-700 text-white shadow-md relative overflow-hidden">
                         <i class="ph-fill ph-boot text-white/10 text-6xl absolute -right-2 -bottom-2"></i>
                         <p class="text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-2">近期活躍狀態</p>
@@ -182,7 +205,7 @@
                 </div>
 
                 <div id="dash-view-overview" class="space-y-6 block">
-                    <div class="grid grid-cols-2 gap-4">
+                    <div id="dash-counts" class="grid grid-cols-2 gap-4">
                         <div class="stat-card bg-gradient-to-br from-white to-green-50">
                             <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">登山紀錄</p>
                             <div class="flex items-baseline gap-1 mt-1"><span id="stat-mt-count" class="text-2xl font-black text-green-600">0</span><span class="text-xs text-slate-400">座</span></div>
@@ -200,19 +223,19 @@
                             <div class="flex items-baseline gap-1 mt-1"><span id="stat-un-count" class="text-2xl font-black text-orange-600">0</span><span class="text-xs text-slate-400">處</span></div>
                         </div>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="stat-card flex flex-col"><p class="text-sm font-bold text-slate-700 mb-2">活動比例</p><div class="relative h-40 w-full flex justify-center"><canvas id="typeChart"></canvas></div></div>
-                        <div class="stat-card flex flex-col"><p class="text-sm font-bold text-slate-700 mb-2">年度趨勢</p><div class="relative h-40 w-full"><canvas id="yearTrendChart"></canvas></div></div>
+                    <div id="dash-charts" class="grid grid-cols-1 gap-4">
+                        <div class="stat-card flex flex-col"><p class="text-sm font-bold text-slate-700 mb-2">活動比例</p><div class="chart-box relative h-40 w-full flex justify-center"><canvas id="typeChart"></canvas></div></div>
+                        <div class="stat-card flex flex-col"><p class="text-sm font-bold text-slate-700 mb-2">年度趨勢</p><div class="chart-box relative h-40 w-full"><canvas id="yearTrendChart"></canvas></div></div>
                     </div>
                     <div class="stat-card flex flex-col mb-10">
                         <p class="text-sm font-bold text-slate-700 mb-2 flex items-center gap-1"><i class="ph-fill ph-thermometer"></i> 月度活躍熱區</p>
                         <p class="text-xs text-slate-400 mb-4">分析歷年來各月份的出行頻率</p>
-                        <div class="relative h-64 w-full flex justify-center"><canvas id="monthChart"></canvas></div>
+                        <div class="chart-box-lg relative h-64 w-full flex justify-center"><canvas id="monthChart"></canvas></div>
                     </div>
                 </div>
 
                 <div id="dash-view-hardcore" class="space-y-4 hidden pb-10">
-                    <div class="grid grid-cols-2 gap-3">
+                    <div id="hard-cards" class="span-2 grid grid-cols-2 gap-3">
                         <div class="stat-card bg-gradient-to-br from-slate-700 to-slate-900 text-white relative overflow-hidden">
                             <i class="ph-fill ph-person-simple-walk absolute -right-2 -bottom-2 text-5xl opacity-10"></i>
                             <p class="text-[11px] font-bold text-slate-400 tracking-wider">總徒步里程</p>
@@ -237,7 +260,7 @@
                         </div>
                     </div>
 
-                    <div class="stat-card">
+                    <div class="stat-card span-2">
                         <p class="text-sm font-bold text-slate-700 mb-3 flex items-center gap-2"><i class="ph-fill ph-gauge text-indigo-500 text-xl"></i> 每趟平均</p>
                         <div class="grid grid-cols-4 gap-2 text-center">
                             <div class="bg-slate-50 rounded-lg p-2"><div class="text-[10px] text-slate-400">里程</div><div class="font-black text-slate-700 text-sm" id="avg-dist">-</div></div>
@@ -289,7 +312,7 @@
                         </table></div>
                     </div>
 
-                    <div class="stat-card">
+                    <div class="stat-card span-2">
                         <div class="flex items-center justify-between mb-3">
                             <p class="text-sm font-bold text-slate-700 flex items-center gap-2"><i class="ph-fill ph-list-numbers text-slate-500 text-xl"></i> 軌跡明細</p>
                             <select id="track-sort" onchange="renderDashboard()" class="text-xs border border-slate-300 rounded-lg px-2 py-1 bg-white outline-none">
@@ -301,7 +324,7 @@
                     </div>
                 </div>
 
-            </div>
+            </div></div>
         </div>
     </aside>
 
@@ -363,7 +386,29 @@
             document.getElementById(`tab-btn-${type}`).classList.add('active');
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             document.getElementById(`tab-${type}`).classList.add('active');
+            applyLayout();
             if (type === 'dash') renderDashboard();
+        }
+
+        // 統計頁版面：自動加寬左側窗格；可收合右側地圖（偏好記在本機瀏覽器）
+        let mapCollapsed = false;
+        try { mapCollapsed = localStorage.getItem('gpx_map_collapsed') === '1'; } catch (e) {}
+        function applyLayout() {
+            const onDash = document.getElementById('tab-dash').classList.contains('active');
+            const wasHidden = document.body.classList.contains('map-collapsed');
+            document.body.classList.toggle('dash-wide', onDash);
+            document.body.classList.toggle('map-collapsed', onDash && mapCollapsed);
+            const btn = document.getElementById('map-toggle-btn');
+            btn.querySelector('span').innerText = mapCollapsed ? '顯示地圖' : '收合地圖';
+            btn.querySelector('i').className = mapCollapsed ? 'ph ph-map-trifold' : 'ph ph-sidebar-simple';
+            // 版面寬度改變後，讓地圖重新計算大小（避免出現灰塊）
+            setTimeout(() => map.invalidateSize(), 350);
+            if (wasHidden && !document.body.classList.contains('map-collapsed')) setTimeout(() => map.invalidateSize(), 50);
+        }
+        function toggleMapCollapse() {
+            mapCollapsed = !mapCollapsed;
+            try { localStorage.setItem('gpx_map_collapsed', mapCollapsed ? '1' : '0'); } catch (e) {}
+            applyLayout();
         }
 
         // 儀表板內部子標籤切換
@@ -531,6 +576,7 @@
             const files = input.files; if (!files || files.length === 0) return;
             showLoading(`準備處理 ${files.length} 個檔案...`);
             let success = 0, fail = 0, needsSync = false;
+            const newRecs = [];
 
             const processFile = (file) => new Promise((resolve) => {
                 const r = new FileReader(); r.readAsText(file, "UTF-8");
@@ -538,7 +584,7 @@
                     try {
                         let g = r.result; if (!g || g.trim().length < 50) throw new Error("無效");
                         let d = extractDateFromGPX(g); g = cleanGPX(g); if (g.length > 500000) g = compressGPX(g);
-                        myRecords.push({ id: 'r' + Date.now() + Math.floor(Math.random() * 1000), name: file.name.replace(/\.[^/.]+$/, ""), date: d, lat: 0, lng: 0, status: 'climbed', type: 'track', gpx: LZString.compressToBase64(g), _new: true });
+                        newRecs.push({ id: 'r' + Date.now() + Math.floor(Math.random() * 1000), name: file.name.replace(/\.[^/.]+$/, ""), date: d, lat: 0, lng: 0, status: 'climbed', type: 'track', gpx: LZString.compressToBase64(g), _new: true });
                         success++; needsSync = true; resolve();
                     } catch (e) { fail++; resolve(); }
                 }; r.onerror = () => { fail++; resolve(); };
@@ -546,15 +592,24 @@
 
             for (let i = 0; i < files.length; i++) { showLoading(`處理檔案 (${i + 1}/${files.length})...`); await processFile(files[i]); }
             input.value = '';
-            if (needsSync) { showLoading("同步至雲端..."); updateYearOptions(); renderPoints(); switchTab('point'); syncToSheetWithMessage(`上傳完成！\n成功: ${success}\n失敗: ${fail}`); } 
+            if (needsSync) { switchTab('point'); commitChange(list => list.concat(newRecs), `上傳完成！\n成功: ${success}\n失敗: ${fail}`); }
             else { hideLoading(); uiModal.alert("上傳結果", `載入失敗。\n失敗: ${fail}`); }
         }
 
+        // 讀取雲端最新資料並整理成網頁使用的格式（不改動目前畫面）
+        async function fetchLatestRecords() {
+            const data = await fetch(GOOGLE_SCRIPT_URL, { cache: 'no-store' }).then(r => r.json());
+            if (!Array.isArray(data)) throw new Error(data.error || "格式錯誤");
+            return data.map(normalizeRecord);
+        }
         function fetchFromSheet() {
             showLoading("同步中...");
-            fetch(GOOGLE_SCRIPT_URL).then(r => r.json()).then(data => {
-                if (!Array.isArray(data)) throw new Error(data.error || "格式錯誤");
-                myRecords = data.map(r => {
+            fetchLatestRecords().then(list => {
+                myRecords = list;
+                updateYearOptions(); renderPoints(); hideLoading(); statusText.innerText = `已同步 ${list.length} 筆`; checkTrackDates();
+            }).catch((err) => { hideLoading(); uiModal.alert("失敗", "讀取失敗。\n" + (err.message || '')); });
+        }
+        function normalizeRecord(r) {
                     let c = r.gpx || "", i = 1; while (r[`gpx_seg_${i}`] !== undefined) { c += r[`gpx_seg_${i}`]; delete r[`gpx_seg_${i}`]; i++; }
                     if (c.startsWith('TXT:')) c = c.substring(4); r.gpx = c;
                     if (r.date) {
@@ -570,12 +625,24 @@
                         else if (m3) r.date = `${m3[1]}-${m3[2].padStart(2,'0')}-${m3[3].padStart(2,'0')}`;
                         else r.date = d;
                     } return r;
-                });
-                updateYearOptions(); renderPoints(); hideLoading(); statusText.innerText = `已同步 ${data.length} 筆`; checkTrackDates();
-            }).catch((err) => { hideLoading(); uiModal.alert("失敗", "讀取失敗。\n" + (err.message || '')); });
         }
 
-        function syncToSheetWithMessage(msg) {
+        // 🛡️ 防覆蓋寫入：先抓雲端最新資料，只套用「這次的變更」，再整份寫回。
+        // 舊版直接拿分頁記憶體裡的資料覆蓋雲端，開著舊分頁存檔會把別處的修改（試算表手改、其他分頁/手機）蓋掉。
+        async function commitChange(applyFn, msg) {
+            showLoading("讀取雲端最新資料...");
+            let latest;
+            try { latest = await fetchLatestRecords(); }
+            catch (e) { hideLoading(); uiModal.alert("未儲存", "無法讀取雲端最新資料，為避免覆蓋其他地方的修改，這次變更沒有寫入，請稍後再試。\n" + (e.message || '')); return false; }
+            const result = applyFn(latest);
+            myRecords = Array.isArray(result) ? result : latest;
+            updateYearOptions(); renderPoints(); checkTrackDates();
+            showLoading("同步至雲端...");
+            return pushToSheet(msg);
+        }
+
+        // 只能由 commitChange 呼叫（它會先合併雲端最新資料）
+        function pushToSheet(msg) {
             const p = myRecords.map(r => {
                 let e = { ...r }; if (e.date && !String(e.date).startsWith("'")) e.date = "'" + e.date;
                 if (e.gpx && typeof e.gpx === 'string') {
@@ -584,13 +651,14 @@
                     else e.gpx = s;
                 } delete e.isBroken; delete e.stats; delete e._new; return e; // 移除 client-side 暫存的 stats 避免寫入 DB
             });
-            fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ password: _sessionPassword, records: p }) }).then(r => r.text()).then(res => {
-                if (res.includes("Unauthorized")) { _sessionPassword = null; hideLoading(); uiModal.alert("驗證失敗", "密碼錯誤。"); return; }
+            // 寫入失敗時重新載入雲端實際資料，避免畫面顯示其實沒存進去的內容
+            return fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ password: _sessionPassword, records: p }) }).then(r => r.text()).then(res => {
+                if (res.includes("Unauthorized")) { _sessionPassword = null; hideLoading(); uiModal.alert("驗證失敗", "密碼錯誤，這次變更沒有存入，請重新操作。"); fetchFromSheet(); return false; }
                 if (res.includes("Error")) throw new Error(res);
-                statusText.innerText = "同步完成"; hideLoading(); renderDashboard(); if (msg) uiModal.alert("報告", msg);
-            }).catch(() => { hideLoading(); uiModal.alert("錯誤", "儲存發生錯誤。"); });
+                statusText.innerText = `同步完成（${myRecords.length} 筆）`; hideLoading(); renderDashboard(); if (msg) uiModal.alert("報告", msg);
+                return true;
+            }).catch(() => { hideLoading(); uiModal.alert("錯誤", "儲存發生錯誤，這次變更可能沒有存入，已重新載入雲端資料。"); fetchFromSheet(); return false; });
         }
-        function syncToSheet() { syncToSheetWithMessage(null); }
 
         // 找出「已存在雲端、但日期是用舊版 UTC 邏輯算錯」的軌跡
         function findWrongTrackDates() {
@@ -615,20 +683,26 @@
             if (!wrong.length) { uiModal.alert("校正軌跡日期", "沒有勾選任何項目。"); return; }
             if (!await requireWriteAuth()) return;
             if (!await uiModal.confirm("校正軌跡日期", `將依 GPX 內的出發時間（台灣時間）更新 ${wrong.length} 筆軌跡的日期，並同步回雲端。確定嗎？`)) return;
-            wrong.forEach(w => w.r.date = w.correct);
-            showLoading("校正並同步中..."); updateYearOptions(); renderPoints(); checkTrackDates();
-            syncToSheetWithMessage(`已校正 ${wrong.length} 筆軌跡日期。`);
+            const fix = {}; wrong.forEach(w => fix[String(w.r.id)] = w.correct);
+            commitChange(list => { list.forEach(r => { if (fix[String(r.id)]) r.date = fix[String(r.id)]; }); return list; }, `已校正 ${wrong.length} 筆軌跡日期。`);
         }
         function escapeHTML(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
         async function addRecord() {
             if (!await requireWriteAuth()) return;
             const n = document.getElementById('input-name').value, lat = inputLat.value, lng = inputLng.value, d = document.getElementById('input-date').value;
             if (!n || !lat || !d) { uiModal.alert("不完整", "請填寫名稱、座標與日期。"); return; }
-            myRecords.push({ id: 'r'+Date.now(), name: n, date: d, lat, lng, status: document.querySelector('input[name="status"]:checked').value, type: document.querySelector('input[name="type"]:checked').value, gpx: "" });
-            document.getElementById('input-name').value = ''; inputLat.value = ''; inputLng.value = ''; if (tempMarker) map.removeLayer(tempMarker); updateYearOptions(); renderPoints(); syncToSheet();
+            const rec = { id: 'r'+Date.now(), name: n, date: d, lat, lng, status: document.querySelector('input[name="status"]:checked').value, type: document.querySelector('input[name="type"]:checked').value, gpx: "" };
+            document.getElementById('input-name').value = ''; inputLat.value = ''; inputLng.value = ''; if (tempMarker) map.removeLayer(tempMarker);
+            commitChange(list => list.concat([rec]), null);
         }
-        async function deleteRecord(id) { if (!await requireWriteAuth()) return; if (await uiModal.confirm("刪除", "確定要刪除嗎？")) { myRecords = myRecords.filter(r => r.id !== id); updateYearOptions(); renderPoints(); syncToSheet(); } }
-        async function toggleStatus(id) { if (!await requireWriteAuth()) return; const r = myRecords.find(x => x.id === id); if(r && r.type !== 'track') { r.status = r.status === 'climbed' ? 'unclimbed' : 'climbed'; renderPoints(); syncToSheet(); } }
+        async function deleteRecord(id) {
+            if (!await requireWriteAuth()) return;
+            if (await uiModal.confirm("刪除", "確定要刪除嗎？")) commitChange(list => list.filter(r => String(r.id) !== String(id)), null);
+        }
+        async function toggleStatus(id) {
+            if (!await requireWriteAuth()) return;
+            commitChange(list => { const r = list.find(x => String(x.id) === String(id)); if (r && r.type !== 'track') r.status = r.status === 'climbed' ? 'unclimbed' : 'climbed'; return list; }, null);
+        }
 
         function renderDashboard() {
             const year = yearFilter.value;
