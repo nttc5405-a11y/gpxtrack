@@ -7,11 +7,11 @@
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
     
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web@2.1.2"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.6.1"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
 
@@ -62,6 +62,12 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
 
+        /* 清單的編輯/狀態/刪除按鈕：有滑鼠的裝置滑過才出現；手機（無滑鼠）一律顯示 */
+        @media (hover: hover) {
+            .action-row { opacity: 0; }
+            .group:hover .action-row, .group:focus-within .action-row { opacity: 1; }
+        }
+
         /* ===== 統計頁寬版版面（只在桌機／平板 ≥768px 生效；手機維持原本全螢幕側欄） ===== */
         #sidebar { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s ease; }
         @media (min-width: 768px) {
@@ -106,6 +112,30 @@
         </div>
     </div>
 
+    <!-- 編輯紀錄視窗 -->
+    <div id="edit-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[10000] flex items-center justify-center hidden p-4">
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 space-y-3">
+            <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2"><i class="ph-fill ph-pencil-simple text-blue-500"></i> 編輯紀錄</h3>
+            <label class="block text-xs font-bold text-slate-500">名稱<input id="edit-name" type="text" class="mt-1 w-full px-3 py-2 text-sm border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"></label>
+            <label class="block text-xs font-bold text-slate-500">日期<input id="edit-date" type="date" class="mt-1 w-full px-3 py-2 text-sm border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"></label>
+            <div id="edit-point-fields" class="space-y-3">
+                <div class="grid grid-cols-2 gap-3">
+                    <label class="block text-xs font-bold text-slate-500">類型<select id="edit-type" class="mt-1 w-full px-3 py-2 text-sm border border-slate-300 rounded-lg bg-white"><option value="mountain">登山</option><option value="river">溯溪</option></select></label>
+                    <label class="block text-xs font-bold text-slate-500">狀態<select id="edit-status" class="mt-1 w-full px-3 py-2 text-sm border border-slate-300 rounded-lg bg-white"><option value="climbed">已完成</option><option value="unclimbed">待前往</option></select></label>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <label class="block text-xs font-bold text-slate-500">緯度<input id="edit-lat" type="text" inputmode="decimal" class="mt-1 w-full px-3 py-2 text-sm border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"></label>
+                    <label class="block text-xs font-bold text-slate-500">經度<input id="edit-lng" type="text" inputmode="decimal" class="mt-1 w-full px-3 py-2 text-sm border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"></label>
+                </div>
+            </div>
+            <p id="edit-track-hint" class="text-[11px] text-slate-400 hidden">軌跡的路線內容不能在這裡修改，要換路線請刪除後重新上傳 GPX。</p>
+            <div class="flex justify-end gap-3 pt-2">
+                <button onclick="closeEdit()" class="px-4 py-2 text-sm font-bold text-slate-500 hover:bg-slate-100 rounded-lg transition">取消</button>
+                <button onclick="saveEdit()" class="px-6 py-2 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-lg shadow-blue-200 transition">儲存並同步</button>
+            </div>
+        </div>
+    </div>
+
     <div class="absolute top-4 left-4 z-[1500] flex flex-col gap-2">
         <button onclick="toggleSidebar()" class="bg-white p-3 rounded-xl shadow-lg md:hidden hover:bg-gray-50 text-slate-700"><i class="ph ph-list text-2xl"></i></button>
         <button onclick="fetchFromSheet()" class="bg-white p-3 rounded-xl shadow-lg hover:bg-gray-50 text-blue-600 transition" title="重新整理"><i class="ph ph-arrows-clockwise text-2xl"></i></button>
@@ -145,11 +175,21 @@
                         </div>
                     </div>
                     <div class="grid grid-cols-3 gap-2"><input type="text" id="input-name" placeholder="名稱" class="col-span-2 w-full px-4 py-2 text-sm border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"><input type="date" id="input-date" class="w-full px-2 py-2 text-sm border border-slate-300 rounded-lg outline-none"></div>
-                    <div class="flex gap-2"><input type="text" id="input-lat" placeholder="緯度" oninput="handleLatInput(this)" class="flex-1 px-4 py-2 text-sm border border-slate-300 rounded-lg"><input type="text" id="input-lng" placeholder="經度" oninput="handleManualCoord()" class="flex-1 px-4 py-2 text-sm border border-slate-300 rounded-lg"></div>
+                    <div class="flex gap-2"><input type="text" id="input-lat" placeholder="緯度" oninput="handleLatInput(this)" class="flex-1 min-w-0 px-4 py-2 text-sm border border-slate-300 rounded-lg"><input type="text" id="input-lng" placeholder="經度" oninput="handleManualCoord()" class="flex-1 min-w-0 px-4 py-2 text-sm border border-slate-300 rounded-lg"></div>
                     <button onclick="addRecord()" class="w-full bg-slate-800 hover:bg-slate-700 text-white py-2.5 rounded-lg shadow-lg transition flex items-center justify-center gap-2 font-bold"><i class="ph ph-cloud-arrow-up text-lg"></i> 新增紀錄並同步</button>
                 </div>
                 <div class="pt-2">
                     <div class="flex items-center justify-between mb-3"><label class="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-1"><i class="ph ph-funnel"></i> 紀錄清單</label><select id="year-filter" onchange="renderPoints()" class="text-sm border border-slate-300 rounded-lg px-3 py-1 bg-white outline-none"><option value="all">顯示全部年份</option></select></div>
+                    <div class="flex gap-2 mb-2">
+                        <div class="relative flex-1">
+                            <i class="ph ph-magnifying-glass absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            <input id="list-search" type="search" oninput="renderList()" placeholder="搜尋名稱或日期" class="w-full pl-8 pr-2 py-1.5 text-sm border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <select id="list-type" onchange="renderList()" class="text-sm border border-slate-300 rounded-lg px-2 py-1 bg-white outline-none">
+                            <option value="all">全部類型</option><option value="mountain">登山</option><option value="river">溯溪</option><option value="track">軌跡</option><option value="unclimbed">待前往</option>
+                        </select>
+                    </div>
+                    <p id="list-count" class="text-[11px] text-slate-400 mb-3"></p>
                     <div id="record-list" class="space-y-3 pb-10"></div>
                 </div>
             </div>
@@ -348,7 +388,18 @@
 
         const map = L.map('map', { zoomControl: false }).setView([23.6, 120.96], 7);
         L.control.zoom({ position: 'topright' }).addTo(map);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap', maxZoom: 18 }).addTo(map);
+        // 底圖：街道圖／等高線地形圖／國土測繪中心電子地圖／正射影像（右上角切換，記住上次選擇）
+        const baseMaps = {
+            '街道圖 (OSM)': L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap', maxZoom: 19 }),
+            '等高線地形圖': L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap, SRTM | &copy; OpenTopoMap (CC-BY-SA)', maxZoom: 17, subdomains: 'abc' }),
+            '臺灣通用電子地圖': L.tileLayer('https://wmts.nlsc.gov.tw/wmts/EMAP/default/GoogleMapsCompatible/{z}/{y}/{x}', { attribution: '&copy; 內政部國土測繪中心', maxZoom: 19 }),
+            '正射影像（空照）': L.tileLayer('https://wmts.nlsc.gov.tw/wmts/PHOTO2/default/GoogleMapsCompatible/{z}/{y}/{x}', { attribution: '&copy; 內政部國土測繪中心', maxZoom: 19 })
+        };
+        let baseName = '街道圖 (OSM)';
+        try { const saved = localStorage.getItem('gpx_basemap'); if (saved && baseMaps[saved]) baseName = saved; } catch (e) {}
+        baseMaps[baseName].addTo(map);
+        L.control.layers(baseMaps, null, { position: 'topright' }).addTo(map);
+        map.on('baselayerchange', e => { try { localStorage.setItem('gpx_basemap', e.name); } catch (err) {} });
         map.addControl(new (L.Control.extend({
             options: { position: 'topright' },
             onAdd: function() {
@@ -627,9 +678,35 @@
                     } return r;
         }
 
-        // 🛡️ 防覆蓋寫入：先抓雲端最新資料，只套用「這次的變更」，再整份寫回。
-        // 舊版直接拿分頁記憶體裡的資料覆蓋雲端，開著舊分頁存檔會把別處的修改（試算表手改、其他分頁/手機）蓋掉。
+        // 判斷 Apps Script 是否為 v2（支援逐筆更新）。舊版會忽略 ?api=info 直接回傳整份資料陣列 → 視為 v1。
+        let _serverApi = null;
+        async function detectServerApi() {
+            if (_serverApi !== null) return _serverApi;
+            try {
+                const res = await fetch(GOOGLE_SCRIPT_URL + '?api=info', { cache: 'no-store' }).then(r => r.json());
+                _serverApi = (res && !Array.isArray(res) && Number(res.api) >= 2) ? Number(res.api) : 1;
+                return _serverApi;
+            } catch (e) { return 1; } // 連線失敗不記住，下次再問；v1 流程讀不到雲端時本來就不會寫入
+        }
+
+        // 把一筆紀錄轉成試算表的格式（日期加 ' 防止被轉成日期型別、GPX 每 40000 字切一段）
+        function toSheetRecord(r) {
+            let e = { ...r }; if (e.date && !String(e.date).startsWith("'")) e.date = "'" + e.date;
+            if (e.gpx && typeof e.gpx === 'string') {
+                let s = e.gpx.startsWith('TXT:') ? e.gpx : 'TXT:' + e.gpx;
+                if (s.length > 40000) { e.gpx = s.substring(0, 40000); for (let i = 1; i < Math.ceil(s.length / 40000); i++) e[`gpx_seg_${i}`] = s.substring(i * 40000, (i + 1) * 40000); }
+                else e.gpx = s;
+            }
+            delete e.isBroken; delete e.stats; delete e._new; delete e._color; // 網頁暫存用的欄位不寫入
+            return e;
+        }
+
+        // 🛡️ 寫入入口：所有新增／刪除／編輯／上傳都走這裡。
+        //  - 伺服器 v2：只送「有變動的紀錄」，伺服器依 id 逐筆更新，其他紀錄完全不動（快、也不會蓋掉別處的修改）
+        //  - 伺服器 v1（舊版 Apps Script）：先抓雲端最新資料、套用這次的變更，再整份寫回
         async function commitChange(applyFn, msg) {
+            showLoading("準備同步...");
+            if (await detectServerApi() >= 2) return commitOps(applyFn, msg);
             showLoading("讀取雲端最新資料...");
             let latest;
             try { latest = await fetchLatestRecords(); }
@@ -641,16 +718,38 @@
             return pushToSheet(msg);
         }
 
-        // 只能由 commitChange 呼叫（它會先合併雲端最新資料）
-        function pushToSheet(msg) {
-            const p = myRecords.map(r => {
-                let e = { ...r }; if (e.date && !String(e.date).startsWith("'")) e.date = "'" + e.date;
-                if (e.gpx && typeof e.gpx === 'string') {
-                    let s = e.gpx.startsWith('TXT:') ? e.gpx : 'TXT:' + e.gpx;
-                    if (s.length > 40000) { e.gpx = s.substring(0, 40000); for (let i = 1; i < Math.ceil(s.length / 40000); i++) e[`gpx_seg_${i}`] = s.substring(i * 40000, (i + 1) * 40000); } 
-                    else e.gpx = s;
-                } delete e.isBroken; delete e.stats; delete e._new; return e; // 移除 client-side 暫存的 stats 避免寫入 DB
+        // v2 逐筆更新：比對變更前後，只送新增／修改（upsert）與刪除（delete）的紀錄
+        async function commitOps(applyFn, msg) {
+            const before = new Map(myRecords.map(r => [String(r.id), JSON.stringify(toSheetRecord(r))]));
+            const working = myRecords.map(r => ({ ...r }));           // 複本：寫入成功前不動到畫面上的資料
+            const result = applyFn(working), after = Array.isArray(result) ? result : working;
+            const ops = [], afterIds = new Set();
+            after.forEach(r => {
+                const id = String(r.id), rec = toSheetRecord(r); afterIds.add(id);
+                if (before.get(id) !== JSON.stringify(rec)) ops.push({ op: 'upsert', record: rec });
             });
+            before.forEach((_, id) => { if (!afterIds.has(id)) ops.push({ op: 'delete', id }); });
+            if (!ops.length) { hideLoading(); return true; }
+
+            showLoading(`同步至雲端（${ops.length} 筆變更）...`);
+            try {
+                const res = await fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ password: _sessionPassword, ops }) }).then(r => r.text());
+                if (res.includes("Unauthorized")) { _sessionPassword = null; hideLoading(); uiModal.alert("驗證失敗", "密碼錯誤，這次變更沒有存入，請重新操作。"); return false; }
+                if (res.includes("Error")) throw new Error(res);
+                const j = JSON.parse(res); if (!j.ok) throw new Error(res);
+                myRecords = after;
+                updateYearOptions(); renderPoints(); checkTrackDates();
+                statusText.innerText = `同步完成（${myRecords.length} 筆）`; hideLoading(); renderDashboard(); if (msg) uiModal.alert("報告", msg);
+                return true;
+            } catch (e) {
+                hideLoading(); uiModal.alert("錯誤", "儲存發生錯誤，這次變更可能沒有存入，已重新載入雲端資料。\n" + (e.message || '').slice(0, 200));
+                fetchFromSheet(); return false;
+            }
+        }
+
+        // v1 整份寫回：只能由 commitChange 呼叫（它會先合併雲端最新資料）
+        function pushToSheet(msg) {
+            const p = myRecords.map(toSheetRecord);
             // 寫入失敗時重新載入雲端實際資料，避免畫面顯示其實沒存進去的內容
             return fetch(GOOGLE_SCRIPT_URL, { method: 'POST', body: JSON.stringify({ password: _sessionPassword, records: p }) }).then(r => r.text()).then(res => {
                 if (res.includes("Unauthorized")) { _sessionPassword = null; hideLoading(); uiModal.alert("驗證失敗", "密碼錯誤，這次變更沒有存入，請重新操作。"); fetchFromSheet(); return false; }
@@ -695,6 +794,45 @@
             document.getElementById('input-name').value = ''; inputLat.value = ''; inputLng.value = ''; if (tempMarker) map.removeLayer(tempMarker);
             commitChange(list => list.concat([rec]), null);
         }
+        // 編輯紀錄：存檔一樣走 commitChange（先合併雲端最新資料）
+        let _editingId = null;
+        function openEdit(id) {
+            const r = myRecords.find(x => String(x.id) === String(id)); if (!r) return;
+            _editingId = String(id);
+            const isTrack = r.type === 'track';
+            document.getElementById('edit-name').value = r.name || '';
+            document.getElementById('edit-date').value = /^\d{4}-\d{2}-\d{2}$/.test(r.date || '') ? r.date : '';
+            document.getElementById('edit-point-fields').classList.toggle('hidden', isTrack);
+            document.getElementById('edit-track-hint').classList.toggle('hidden', !isTrack);
+            if (!isTrack) {
+                document.getElementById('edit-type').value = r.type === 'river' ? 'river' : 'mountain';
+                document.getElementById('edit-status').value = r.status === 'unclimbed' ? 'unclimbed' : 'climbed';
+                document.getElementById('edit-lat').value = r.lat ?? ''; document.getElementById('edit-lng').value = r.lng ?? '';
+            }
+            document.getElementById('edit-modal').classList.remove('hidden');
+            setTimeout(() => document.getElementById('edit-name').focus(), 50);
+        }
+        function closeEdit() { document.getElementById('edit-modal').classList.add('hidden'); _editingId = null; }
+        async function saveEdit() {
+            const id = _editingId; if (!id) return;
+            const orig = myRecords.find(x => String(x.id) === id); if (!orig) { closeEdit(); return; }
+            const name = document.getElementById('edit-name').value.trim(), date = document.getElementById('edit-date').value;
+            if (!name || !date) { await uiModal.alert("不完整", "名稱與日期不能空白。"); return; }
+            const changes = { name, date };
+            if (orig.type !== 'track') {
+                const lat = parseFloat(document.getElementById('edit-lat').value), lng = parseFloat(document.getElementById('edit-lng').value);
+                if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) { await uiModal.alert("座標錯誤", "請輸入正確的緯度與經度數字。"); return; }
+                Object.assign(changes, { lat, lng, type: document.getElementById('edit-type').value, status: document.getElementById('edit-status').value });
+            }
+            closeEdit();
+            if (!await requireWriteAuth()) return;
+            commitChange(list => {
+                const r = list.find(x => String(x.id) === id);
+                if (!r) { uiModal.alert("找不到紀錄", "這筆紀錄已在其他地方被刪除，沒有寫入任何變更。"); return list; }
+                Object.assign(r, changes); return list;
+            }, null);
+        }
+
         async function deleteRecord(id) {
             if (!await requireWriteAuth()) return;
             if (await uiModal.confirm("刪除", "確定要刪除嗎？")) commitChange(list => list.filter(r => String(r.id) !== String(id)), null);
@@ -828,14 +966,31 @@
                     } else r.isBroken = true;
                 } else if (r.type !== 'track') {
                     layer = r.type === 'river' ? L.marker([r.lat, r.lng], { icon: L.divIcon({ className: '', html: `<div class="river-icon-div" style="border: 3px solid ${color}; color: ${color};"><i class="ph-fill ph-waves"></i></div>`, iconSize: [32, 32] }) }) : L.circleMarker([r.lat, r.lng], { color: '#fff', weight: 2, fillColor: color, fillOpacity: 1, radius: 9 });
-                    layer.bindTooltip(r.name, { permanent: true, direction: 'bottom', className: 'custom-label', offset: [0, 8] }); layer.addTo(map).bindPopup(`<b>${r.name}</b><br>${r.date}`); mapLayers[r.id] = layer;
+                    layer.bindTooltip(escapeHTML(r.name), { permanent: true, direction: 'bottom', className: 'custom-label', offset: [0, 8] }); layer.addTo(map).bindPopup(`<b>${escapeHTML(r.name)}</b><br>${r.date}`); mapLayers[r.id] = layer;
                 }
+                r._color = color;
+            });
+            renderList();
+            if (document.getElementById('tab-dash').classList.contains('active')) renderDashboard();
+        }
+
+        // 紀錄清單（套用年份＋搜尋＋類型篩選；地圖仍顯示該年份全部）
+        function renderList() {
+            const list = document.getElementById('record-list'), year = yearFilter.value;
+            const q = document.getElementById('list-search').value.trim().toLowerCase(), t = document.getElementById('list-type').value;
+            const inYear = myRecords.filter(r => year === 'all' || !r.date || String(r.date).split('-')[0] === year);
+            const shown = inYear.filter(r =>
+                (!q || String(r.name || '').toLowerCase().includes(q) || String(r.date || '').includes(q)) &&
+                (t === 'all' || (t === 'unclimbed' ? r.status === 'unclimbed' : r.type === t)));
+            document.getElementById('list-count').innerText = (q || t !== 'all') ? `符合 ${shown.length} / ${inYear.length} 筆` : `共 ${inYear.length} 筆`;
+            list.innerHTML = shown.length ? '' : '<p class="text-sm text-slate-400 text-center py-6">沒有符合的紀錄</p>';
+            shown.forEach(r => {
+                const isClimbed = r.status === 'climbed', color = r._color || '#3b82f6', yr = String(r.date || '').split('-')[0];
                 const div = document.createElement('div'); div.className = "bg-white p-4 rounded-xl border border-slate-100 hover:border-blue-200 hover:shadow-lg transition-all cursor-pointer group";
-                div.innerHTML = `<div class="flex items-start gap-3"><div class="p-2 rounded-lg" style="background-color:${color}15; color:${color}">${r.type === 'track' ? '<i class="ph-fill ph-path"></i>' : (r.type === 'river' ? '<i class="ph-fill ph-waves"></i>' : '<i class="ph-fill ph-mountains"></i>')}</div><div class="flex-1"><div class="font-bold text-slate-800 text-sm flex items-center">${r.name}${r.type === 'track' ? `<span class="text-[10px] bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded-md ml-2 font-bold">軌跡</span>${r.isBroken ? `<span class="text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded-md ml-1 font-bold"><i class="ph-fill ph-warning-circle"></i> 舊版損壞檔</span>` : ''}` : ''}</div><div class="text-[11px] text-slate-400 flex items-center gap-2 mt-1">${isClimbed ? `<span class="text-[10px] text-white px-2 py-0.5 rounded font-bold" style="background-color:${color}">${r.date.split('-')[0]}</span>` : `<span class="text-[10px] bg-red-100 text-red-600 px-2 py-0.5 rounded font-bold">待前往</span>`} <span><i class="ph ph-calendar-blank"></i> ${r.date}</span></div></div></div><div class="mt-3 flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">${r.type !== 'track' ? `<button class="text-[11px] font-bold bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1 rounded-md" onclick="toggleStatus('${r.id}'); event.stopPropagation();">狀態</button>` : ''}<button class="text-[11px] font-bold bg-red-50 hover:bg-red-100 text-red-500 px-3 py-1 rounded-md" onclick="deleteRecord('${r.id}'); event.stopPropagation();">刪除</button></div>`;
+                div.innerHTML = `<div class="flex items-start gap-3"><div class="p-2 rounded-lg" style="background-color:${color}15; color:${color}">${r.type === 'track' ? '<i class="ph-fill ph-path"></i>' : (r.type === 'river' ? '<i class="ph-fill ph-waves"></i>' : '<i class="ph-fill ph-mountains"></i>')}</div><div class="flex-1 min-w-0"><div class="font-bold text-slate-800 text-sm flex items-center flex-wrap">${escapeHTML(r.name)}${r.type === 'track' ? `<span class="text-[10px] bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded-md ml-2 font-bold">軌跡</span>${r.isBroken ? `<span class="text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded-md ml-1 font-bold"><i class="ph-fill ph-warning-circle"></i> 舊版損壞檔</span>` : ''}` : ''}</div><div class="text-[11px] text-slate-400 flex items-center gap-2 mt-1">${isClimbed ? `<span class="text-[10px] text-white px-2 py-0.5 rounded font-bold" style="background-color:${color}">${yr}</span>` : `<span class="text-[10px] bg-red-100 text-red-600 px-2 py-0.5 rounded font-bold">待前往</span>`} <span><i class="ph ph-calendar-blank"></i> ${r.date || '-'}</span></div></div></div><div class="action-row mt-3 flex justify-end gap-2 transition-opacity"><button class="text-[11px] font-bold bg-blue-50 hover:bg-blue-100 text-blue-600 px-3 py-1 rounded-md" onclick="openEdit('${r.id}'); event.stopPropagation();">編輯</button>${r.type !== 'track' ? `<button class="text-[11px] font-bold bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1 rounded-md" onclick="toggleStatus('${r.id}'); event.stopPropagation();">狀態</button>` : ''}<button class="text-[11px] font-bold bg-red-50 hover:bg-red-100 text-red-500 px-3 py-1 rounded-md" onclick="deleteRecord('${r.id}'); event.stopPropagation();">刪除</button></div>`;
                 div.onclick = () => focusRecord(r.id);
                 list.appendChild(div);
             });
-            if (document.getElementById('tab-dash').classList.contains('active')) renderDashboard();
         }
 
         function focusRecord(id) {
