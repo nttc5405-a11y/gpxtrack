@@ -211,6 +211,7 @@
                     <div id="date-fix-text"></div>
                     <button onclick="fixTrackDates()" class="mt-3 w-full bg-amber-500 hover:bg-amber-600 text-white py-2 rounded-lg font-bold text-sm transition">校正勾選項目並同步</button>
                 </div>
+                <p id="date-ignore-note" class="hidden text-[11px] text-slate-400 mt-2 text-center"></p>
             </div>
         </div>
 
@@ -760,21 +761,40 @@
         }
 
         // 找出「已存在雲端、但日期是用舊版 UTC 邏輯算錯」的軌跡
-        function findWrongTrackDates() {
+        // date_ignore 欄記錄「被按下忽略時 GPX 建議的日期」（加 GPX: 前綴避免試算表轉成日期型別）；
+        // 只要 GPX 建議日期沒變，就不再提醒，之後手動改日期也不會再跳出來
+        function findWrongTrackDates(includeIgnored) {
             return myRecords.filter(r => r.type === 'track' && r.gpx).map(r => {
                 const st = getTrackStats(r).startTime || extractStartTimeFromGPX(decodeGPX(r));
                 return st ? { r, correct: toLocalDateStr(st) } : null;
-            }).filter(x => x && x.correct !== r_date(x.r));
+            }).filter(x => x && x.correct !== r_date(x.r) && (includeIgnored || !isDateIgnored(x)));
         }
+        function isDateIgnored(w) { return String(w.r.date_ignore || '') === 'GPX:' + w.correct; }
         function r_date(r) { return String(r.date || ''); }
         function checkTrackDates() {
-            const wrong = findWrongTrackDates(), box = document.getElementById('date-fix-box');
+            const all = findWrongTrackDates(true), wrong = all.filter(w => !isDateIgnored(w)), box = document.getElementById('date-fix-box');
             box.classList.toggle('hidden', wrong.length === 0);
+            const ignoredN = all.length - wrong.length, note = document.getElementById('date-ignore-note');
+            note.classList.toggle('hidden', ignoredN === 0);
+            note.innerHTML = ignoredN ? `已忽略 ${ignoredN} 筆日期提醒（GPX 時間不可信，日期以人工為準）　<button onclick="restoreIgnoredDates()" class="underline hover:text-slate-600">恢復提醒</button>` : '';
             // 相差超過 30 天的多半是 GPX 本身時間有問題（例如裝置時鐘錯誤），預設不勾選
             if (wrong.length) document.getElementById('date-fix-text').innerHTML =
                 `發現 <b>${wrong.length}</b> 筆軌跡的日期與 GPX 實際出發時間（台灣時間）不符。請勾選要校正的項目：<div class="mt-2 max-h-48 overflow-y-auto custom-scrollbar text-[11px] space-y-1 bg-white/60 rounded-lg p-2">${wrong.map(w => {
                     const diff = Math.round((new Date(w.correct) - new Date(w.r.date)) / 86400000), big = Math.abs(diff) > 30;
-                    return `<label class="flex items-start gap-1.5 cursor-pointer"><input type="checkbox" class="date-fix-chk mt-0.5" value="${w.r.id}" ${big ? '' : 'checked'}><span>${escapeHTML(w.r.name)}：${w.r.date} → <b>${w.correct}</b>${big ? ' <span class="text-red-600 font-bold">（差 ' + Math.abs(diff) + ' 天，請確認）</span>' : ''}</span></label>`; }).join('')}</div>`;
+                    return `<div class="flex items-start gap-1.5"><label class="flex items-start gap-1.5 cursor-pointer flex-1 min-w-0"><input type="checkbox" class="date-fix-chk mt-0.5" value="${w.r.id}" ${big ? '' : 'checked'}><span>${escapeHTML(w.r.name)}：${w.r.date} → <b>${w.correct}</b>${big ? ' <span class="text-red-600 font-bold">（差 ' + Math.abs(diff) + ' 天，請確認）</span>' : ''}</span></label><button onclick="ignoreTrackDate('${escapeHTML(String(w.r.id))}')" title="目前日期正確，不再提醒" class="shrink-0 px-1.5 py-0.5 rounded border border-amber-300 text-amber-700 hover:bg-amber-100">忽略</button></div>`; }).join('')}</div>`;
+        }
+        async function ignoreTrackDate(id) {
+            const w = findWrongTrackDates().find(x => String(x.r.id) === String(id)); if (!w) return;
+            if (!await requireWriteAuth()) return;
+            if (!await uiModal.confirm("忽略日期提醒", `「${w.r.name}」維持目前日期 ${w.r.date}，不再提醒改成 ${w.correct}。確定嗎？`)) return;
+            const tag = 'GPX:' + w.correct;
+            commitChange(list => { list.forEach(r => { if (String(r.id) === String(id)) r.date_ignore = tag; }); return list; }, null);
+        }
+        async function restoreIgnoredDates() {
+            const ids = new Set(findWrongTrackDates(true).filter(isDateIgnored).map(w => String(w.r.id))); if (!ids.size) return;
+            if (!await requireWriteAuth()) return;
+            if (!await uiModal.confirm("恢復日期提醒", `${ids.size} 筆已忽略的軌跡會重新出現在日期校正清單。確定嗎？`)) return;
+            commitChange(list => { list.forEach(r => { if (ids.has(String(r.id))) r.date_ignore = ''; }); return list; }, null);
         }
         async function fixTrackDates() {
             const picked = new Set(Array.from(document.querySelectorAll('.date-fix-chk:checked')).map(c => c.value));
